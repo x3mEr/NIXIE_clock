@@ -1,7 +1,7 @@
 void settingsTick() { 					// моргать настраиваемыми числами (часы или минуты)
   if (curMode == 1 || curMode == 2) { 	// в режиме настроек будильника или часов
     if (blinkTimer.isReady()) { 		// пришло время моргать
-      sendTime(changeHrs, changeMins);
+      sendTime(changeHrs, changeMins);  // пошлётся то, что настраиваем - будильник или часы
       lampState = !lampState;
       if (lampState) {
         anodeStates[0] = 1;
@@ -24,7 +24,7 @@ void settingsTick() { 					// моргать настраиваемыми чис
 
 void buttonsTick() {
 /* для настроек часов и будильника используются
-одинаковые переменные: changeHrs и changeMins,
+одни переменные: changeHrs и changeMins,
 т. к. они используются в settingsTick().
 Иначе пришлось бы делать две ф-ии settingsTick():
 для случая настройки будильника, и для случая настройки часов */
@@ -36,7 +36,7 @@ void buttonsTick() {
     if (btnR.isClick()) {
       if (!currentDigit) {
         changeHrs++;
-        if (changeHrs > 24) changeHrs = 0; // 24 - alm is OFF
+        if (changeHrs > 23+TUMBLER) changeHrs = 0; // 24 - alm is OFF
       } else {
         changeMins++;
         if (changeMins > 59) changeMins = 0;
@@ -46,7 +46,7 @@ void buttonsTick() {
     if (btnL.isClick()) {
       if (!currentDigit) {
         changeHrs--;
-        if (changeHrs < 0) changeHrs = 24; // 24 - alm is OFF
+        if (changeHrs < 0) changeHrs = 23+TUMBLER; // 24 - alm is OFF
       } else {
         changeMins--;
         if (changeMins < 0) changeMins = 59;
@@ -119,11 +119,14 @@ void buttonsTick() {
         EEPROM.updateByte(1, changeMins);
         alm_hrs = changeHrs;
 		alm_mins = changeMins;
-		DateTime now = rtc.now();
-        changeHrs = now.hour();
-        changeMins = now.minute();
-		sendTime(changeHrs, changeMins);
-		break;
+        changeHrs = hrs;
+        changeMins = mins;
+        // если кто-то будет настраивать время более получаса)
+        //DateTime now = rtc.now();
+        //changeHrs = now.hour();
+        //changeMins = now.minute();
+        //sendTime(changeHrs, changeMins);
+        break;
     }
   }
 
@@ -146,5 +149,6 @@ void buttonsTick() {
 
   if (btnSet.isClick()) {
     if (curMode == 1 || curMode == 2) currentDigit = !currentDigit; // выбор настройки часов или минут
+	else if (!TUMBLER && alm_flag) flTurnAlarmOff = true; //будильник звенит, выключить кнопкой SET
   }
 }

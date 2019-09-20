@@ -24,7 +24,7 @@ void settingsTick() { 					// моргать настраиваемыми чис
 
 void buttonsTick() {
 /* для настроек часов и будильника используются
-одни переменные: changeHrs и changeMins,
+одинаковые переменные: changeHrs и changeMins,
 т. к. они используются в settingsTick().
 Иначе пришлось бы делать две ф-ии settingsTick():
 для случая настройки будильника, и для случая настройки часов */
@@ -105,28 +105,34 @@ void buttonsTick() {
       case 0: // из режима настройки часов в режим часов
         hrs = changeHrs;
         mins = changeMins;
+        modeTimer.setInterval((long)CLOCK_TIME * 1000); // Чтобы после выхода из настроек не попасть на показ темп и влажн - можно запутаться
         rtc.adjust(DateTime(2019, 12, 05, hrs, mins, 0));
-		changeBright();
+        changeBright();
         //sendTime(hrs, mins);
         break;
-      case 1: // из режима часов в режим настройки будильника
+      case 1: // попадаем из режима часов в режим настройки будильника
         changeHrs = EEPROM.readByte(0);
 	    changeMins = EEPROM.readByte(1);
 		sendTime(changeHrs, changeMins);
         break;
-	  case 2: // из режима настройки будильника в настройку часов
+	  case 2: // попадаем из режима настройки будильника в настройку часов
         EEPROM.updateByte(0, changeHrs);
         EEPROM.updateByte(1, changeMins);
         alm_hrs = changeHrs;
-		alm_mins = changeMins;
+        alm_mins = changeMins;
         changeHrs = hrs;
         changeMins = mins;
-        // если кто-то будет настраивать время более получаса)
+        // если кто-то будет настраивать будильник более получаса)
         //DateTime now = rtc.now();
         //changeHrs = now.hour();
         //changeMins = now.minute();
         //sendTime(changeHrs, changeMins);
         break;
+      /*case 3: // попадаем из режима настройки часов в показ темп и влажн. Если нужен такой режим, надо добавить таймер обновления показаний. При входе сюда настроить RTC. По выходу - обновить переменные времени
+	    byte temp = dht.readTemperature();
+        byte hum = dht.readHumidity();
+        sendTime(temp, hum);
+      */
     }
   }
 
@@ -140,15 +146,17 @@ void buttonsTick() {
     EEPROM.updateByte(0, changeHrs);
     EEPROM.updateByte(1, changeMins);
     alm_hrs = changeHrs;
-	alm_mins = changeMins;
-	DateTime now = rtc.now();
-    hrs = now.hour();
-    mins = now.minute();
-    sendTime(hrs, mins);
+    alm_mins = changeMins;
+	modeTimer.setInterval((long)CLOCK_TIME * 1000);
+    // если кто-то будет настраивать будильник более получаса)
+    //DateTime now = rtc.now();
+    //hrs = now.hour();
+    //mins = now.minute();
+    //sendTime(hrs, mins);
   }
 
   if (btnSet.isClick()) {
     if (curMode == 1 || curMode == 2) currentDigit = !currentDigit; // выбор настройки часов или минут
-	else if (!TUMBLER && alm_flag) flTurnAlarmOff = true; //будильник звенит, выключить кнопкой SET
+    else if (!TUMBLER && alm_flag) flTurnAlarmOff = true; //будильник звенит, выключить кнопкой SET
   }
 }

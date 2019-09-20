@@ -36,7 +36,6 @@
   - Ещё управление кнопками в режиме часов:
     - Удержание центральной кнопки - вкл/выкл глюки
 */
-// в оригинальной прошивке если долго настраивать будильник, по выходу в режим часов нет синхронизации с RTC,
 // если часы отстают, после синхронизации с RTC (раз в полчаса) какое-то время проскакивается - в этот промежуток может быть будильник - тогда он не сработает
 // будильник, кратный часам, т. е. в 00 минут. Проверка соответствия текущего времени времени, на которое настроен будильник. Всегда получается 60 минут. Будильник никогда не сработает.
 
@@ -107,6 +106,12 @@ const byte BURN_TIME 1         // период обхода в режиме оч
 const byte ALM_TIMEOUT 30      // таймаут будильника, с
 const word FREQ 900            // частота писка будильника
 
+// --------- DHT ---------
+const byte SHOW_TEMP_HUM 1     // 0 - не показывать температуру и вл., 1 - показывать
+const byte CLOCK_TIME 10       // время (с), которое отображаются часы
+const byte TEMP_TIME 3         // время (с), которое отображается температура и влажность
+
+
 // пины
 const byte ALARM_SW 1   // положение тумблера будильника (1 - выкл (подтянут), 0 - вкл (заземлён))
 const byte PIEZO 2   // пищалка
@@ -171,6 +176,7 @@ GTimer_ms almTimer((long)ALM_TIMEOUT * 1000);
 GTimer_ms flipTimer(FLIP_SPEED_1);
 GTimer_ms glitchTimer(1000);
 GTimer_ms blinkTimer(500);
+GTimer_ms modeTimer((long)CLOCK_TIME * 1000);
 
 // кнопки
 GButton btnSet(BTN1, HIGH_PULL, NORM_OPEN);
@@ -178,7 +184,7 @@ GButton btnL(BTN2, HIGH_PULL, NORM_OPEN);
 GButton btnR(BTN3, HIGH_PULL, NORM_OPEN);
 
 // переменные
-volatile int8_t indiDimm[4];      // величина диммирования (яркость мвечения индикатора) (0-24)
+volatile int8_t indiDimm[4];      // величина диммирования (яркость свечения индикатора) (0-24)
 volatile int8_t indiCounter[4];   // счётчик каждого индикатора (0-24)
 volatile int8_t indiDigits[4];    // цифры, которые должны показать индикаторы (0-10)
 volatile int8_t curIndi;          // текущий индикатор (0-3)
@@ -199,7 +205,7 @@ byte newTime[4];
 byte startCathode[4], endCathode[4];
 byte glitchCounter, glitchMax, glitchIndic;
 bool glitchFlag, indiState;
-byte curMode = 0; // 0 - часы, 1 - настройка будильника, 2 - настройка часов
+byte curMode = 0; // 0 - часы, 1 - настройка будильника, 2 - настройка часов, 3 - темп и влажность
 bool currentDigit = false; // настройка часов (false) или минут (true)
 int8_t changeHrs, changeMins;
 bool lampState = false;
@@ -218,7 +224,7 @@ void setup() {
   // случайное зерно для генератора случайных чисел
   randomSeed(analogRead(6) + analogRead(7));
 
-  // настройка пинов на выход
+  // настройка пинов
   pinMode(DECODER0, OUTPUT);
   pinMode(DECODER1, OUTPUT);
   pinMode(DECODER2, OUTPUT);
@@ -232,19 +238,19 @@ void setup() {
   pinMode(DOT, OUTPUT);
   pinMode(BACKL, OUTPUT);
   pinMode(PIEZO, OUTPUT);
-
   pinMode(ALARM_SW, INPUT_PULLUP)
 
   // задаем частоту ШИМ на 9 и 10 выводах 31 кГц
   TCCR1B = TCCR1B & 0b11111000 | 1;		// ставим делитель 1
-
   // включаем ШИМ  
   setPWM(9, DUTY);
-
   // перенастраиваем частоту ШИМ на пинах 3 и 11 на 7.8 кГц и разрешаем прерывания COMPA
   TCCR2B = (TCCR2B & B11111000) | 2;    // делитель 8
   TCCR2A |= (1 << WGM21);   // включить CTC режим для COMPA
   TIMSK2 |= (1 << OCIE2A);  // включить прерывания по совпадению COMPA
+
+  // ---------- DHT ----------
+  dht.begin();
 
   // ---------- RTC -----------
   rtc.begin();
@@ -255,6 +261,8 @@ void setup() {
   secs = now.second();
   mins = now.minute();
   hrs = now.hour();
+
+  almTimer.stop();
 
   if (EEPROM.readByte(100) != 77) {   // проверка на первый запуск. 77 от балды
     EEPROM.writeByte(100, 77);
@@ -276,7 +284,7 @@ void setup() {
     backlBrightTimer.setInterval((float)BACKL_STEP / backlMaxBright / 2 * BACKL_TIME);
     indiBrightCounter = indiMaxBright;
    }
-   else changeBright();       // изменить яркость согласно времени суток
+   else changeBright();       // всё то же самое, но в функции, которая компилится только если NIGHT_LIGHT - изменить яркость согласно времени суток
 
   // стартовый период глюков
   glitchTimer.setInterval(random(GLITCH_MIN * 1000L, GLITCH_MAX * 1000L));
@@ -292,18 +300,38 @@ void setup() {
     case 3: flipTimer.setInterval(FLIP_SPEED_3);
       break;
   }
-  almTimer.stop();
 }
 
 void loop() {
 // mode vs curMode
-  if (dotTimer.isReady() && curMode == 0) calculateTime();        // каждые 500 мс пересчёт и отправка времени
+  if (dotTimer.isReady() && (curMode == 0 || curMode == 3)) calculateTime();        // каждые 500 мс пересчёт и отправка времени
   if (newTimeFlag && curMode == 0) flipTick();    // перелистывание цифр
   dotBrightTick();                                // плавное мигание точки
   backlBrightTick();                              // плавное мигание подсветки ламп
   if (GLITCH_ALLOWED && curMode == 0) glitchTick();  // глюки
   buttonsTick();                                  // кнопки
   settingsTick();                                 // настройки
+  if (SHOW_TEMP_HUM && !alm_flag && modeTimer.isReady()) modeTick();
+}
+
+void modeTick() {
+#if SHOW_TEMP_HUM
+  if (curMode == 0) {
+    for (byte i = 0; i < 4; i++) indiDigits[i] = 10; // выкл индикаторы - ничего не горит, когда число 10
+	  // или через anodeStates[i] = 0
+    curMode = 3;
+    dotFlag = false;
+    byte temp = dht.readTemperature();
+    byte hum = dht.readHumidity();
+    sendTime(temp, hum);
+    modeTimer.setInterval((long)TEMP_TIME * 1000);
+  }
+  else if (curMode == 3) {
+    for (byte i = 0; i < 4; i++) indiDigits[i] = 10;
+    curMode = 0;
+    modeTimer.setInterval((long)CLOCK_TIME * 1000);
+  }
+#endif
 }
 
 void burnIndicators() {

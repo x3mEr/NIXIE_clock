@@ -36,6 +36,9 @@
   - Ещё управление кнопками в режиме часов:
     - Удержание центральной кнопки - вкл/выкл глюки
 */
+// в оригинальной прошивке если долго настраивать будильник, по выходу в режим часов нет синхронизации с RTC,
+// если часы отстают, после синхронизации с RTC (раз в полчаса) какое-то время проскакивается - в этот промежуток может быть будильник - тогда он не сработает
+// будильник, кратный часам, т. е. в 00 минут. Проверка соответствия текущего времени времени, на которое настроен будильник. Всегда получается 60 минут. Будильник никогда не сработает.
 
 // ************************** НАСТРОЙКИ **************************
 #define BOARD_TYPE 2
@@ -100,10 +103,11 @@ boolean GLITCH_ALLOWED = 1; // 1 - включить, 0 - выключить гл
 // *********************** ДЛЯ РАЗРАБОТЧИКОВ ***********************
 
 // --------- БУДИЛЬНИК ---------
-#define ALM_TIMEOUT 30      // таймаут будильника
+#define ALM_TIMEOUT 30      // таймаут будильника, с
 #define FREQ 900            // частота писка будильника
 
 // пины
+#define ALARM 1   // положение тумблера будильника (1 - выкл (подтянут), 0 - вкл (заземлён))
 #define PIEZO 2   // пищалка
 #define KEY0 3    // часы
 #define KEY1 4    // часы 
@@ -115,6 +119,7 @@ boolean GLITCH_ALLOWED = 1; // 1 - включить, 0 - выключить гл
 #define DOT 10    // точка
 #define BACKL 11  // подсветка
 #define BTN3 12   // кнопка 3
+#define DHTData 13   // DHT data pin
 
 // дешифратор
 #define DECODER0 A0
@@ -151,6 +156,7 @@ byte cathodeMask[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; // и свой порядо
 #include <GyverButton.h>
 #include <Wire.h>
 #include <RTClib.h>
+#include "EEPROMex.h"
 
 RTC_DS3231 rtc;
 
@@ -174,29 +180,29 @@ volatile int8_t indiCounter[4];   // счётчик каждого индика�
 volatile int8_t indiDigits[4];    // цифры, которые должны показать индикаторы (0-10)
 volatile int8_t curIndi;          // текущий индикатор (0-3)
 
-boolean dotFlag;
+bool dotFlag = true;
 int8_t hrs, mins, secs;
-int8_t alm_hrs, alm_mins;
-int8_t mode = 0;    // 0 часы, 1 температура, 2 настройка будильника, 3 настройка часов, 4 аларм
-boolean changeFlag;
-boolean blinkFlag;
+int8_t alm_hrs = 24, alm_mins = 0; // 24 - alarm is OFF
+int8_t mode = 0;    // 0 часы, 3 температура, 1 настройка будильника, 2 настройка часов, 4 аларм
+bool changeFlag;
+bool blinkFlag;
 byte indiMaxBright = INDI_BRIGHT, dotMaxBright = DOT_BRIGHT, backlMaxBright = BACKL_BRIGHT;
-boolean alm_flag;
-boolean dotBrightFlag, dotBrightDirection, backlBrightFlag, backlBrightDirection, indiBrightDirection;
+bool alm_flag = false;
+bool dotBrightFlag, dotBrightDirection, backlBrightFlag, backlBrightDirection, indiBrightDirection;
 int dotBrightCounter, backlBrightCounter, indiBrightCounter;
 byte dotBrightStep;		// один шаг (длительностью DOT_TIMER) изменения яркости точки из одного цикла полного зажигания/угасания DOT_TIME в течение DOT_TIMER
-boolean newTimeFlag;
-boolean flipIndics[4];
+bool newTimeFlag;
+bool flipIndics[4];
 byte newTime[4];
-boolean flipInit;
+bool flipInit;
 byte startCathode[4], endCathode[4];
 byte glitchCounter, glitchMax, glitchIndic;
-boolean glitchFlag, indiState;
-byte curMode = 0;
-boolean currentDigit = false;
+bool glitchFlag, indiState;
+byte curMode = 0; // 0 - часы, 1 - настройка будильника, 2 - настройка часов
+bool currentDigit = false;
 int8_t changeHrs, changeMins;
-boolean lampState = false;
-boolean anodeStates[] = {1, 1, 1, 1};
+bool lampState = false;
+bool anodeStates[] = {1, 1, 1, 1};
 
 void setDig(byte digit) {
   digit = digitMask[digit];
@@ -246,16 +252,27 @@ void setup() {
   mins = now.minute();
   hrs = now.hour();
 
-  /*if (EEPROM.read(100) != 66) {   // проверка на первый запуск. 66 от балды
-    EEPROM.write(100, 66);
-    EEPROM.write(0, 0);     // часы будильника
-    EEPROM.write(1, 0);     // минуты будильника
+  if (EEPROM.readByte(100) != 77) {   // проверка на первый запуск. 77 от балды
+    EEPROM.writeByte(100, 77);
+    EEPROM.writeByte(0, 24);     // часы будильника - 24 = будильник выкл
+    EEPROM.writeByte(1, 30);     // минуты будильника
     }
-    alm_hrs = EEPROM.read(0);
-    alm_mins = EEPROM.read(1);*/
+  alm_hrs = EEPROM.readByte(0);
+  alm_mins = EEPROM.readByte(1);
 
   sendTime(hrs, mins);  // отправить время на индикаторы
-  changeBright();       // изменить яркость согласно времени суток
+  if (NIGHT_LIGHT == 0) {
+    // установить яркость на индикаторы
+    for (byte i = 0; i < 4; i++)
+      indiDimm[i] = indiMaxBright;
+    // расчёт шага яркости точки
+    dotBrightStep = ceil((float)dotMaxBright * 2 / DOT_TIME * DOT_TIMER);
+    if (dotBrightStep == 0) dotBrightStep = 1;
+    // дыхание подсветки
+    backlBrightTimer.setInterval((float)BACKL_STEP / backlMaxBright / 2 * BACKL_TIME);
+    indiBrightCounter = indiMaxBright;
+   }
+   else changeBright();       // изменить яркость согласно времени суток
 
   // стартовый период глюков
   glitchTimer.setInterval(random(GLITCH_MIN * 1000L, GLITCH_MAX * 1000L));
@@ -271,11 +288,12 @@ void setup() {
     case 3: flipTimer.setInterval(FLIP_SPEED_3);
       break;
   }
-  //almTimer.stop();
+  almTimer.stop();
 }
 
 void loop() {
-  if (dotTimer.isReady()) calculateTime();        // каждые 500 мс пересчёт и отправка времени
+// mode vs curMode
+  if (dotTimer.isReady() && mode == 0) calculateTime();        // каждые 500 мс пересчёт и отправка времени
   if (newTimeFlag && curMode == 0) flipTick();    // перелистывание цифр
   dotBrightTick();                                // плавное мигание точки
   backlBrightTick();                              // плавное мигание подсветки ламп

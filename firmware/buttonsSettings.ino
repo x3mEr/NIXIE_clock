@@ -136,7 +136,7 @@ void buttonsTick() {
     }
   }
 
-  if (curMode == 1 && btnSet.isDoubled()) { // из режима настройки будильника в режим часов
+  if (curMode == 1 && btnSet.isDouble()) { // из режима настройки будильника в режим часов
     anodeStates[0] = 1;
     anodeStates[1] = 1;
     anodeStates[2] = 1;

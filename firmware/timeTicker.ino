@@ -27,8 +27,8 @@ void calculateTime() {
 
     if (newTimeFlag) {
       setNewTime();         // обновляем массив времени
-      if (TUMBLER && !digitalRead(ALARM) && !alm_flag && alm_mins == mins && alm_hrs == hrs) // есть тумблер, он в положении ВКЛ, будильник не звенит и ему пора звенеть
-         || (!TUMBLER && !alm_flag && alm_mins == mins && alm_hrs == hrs) { // нет тумблера, будильник не звенит и ему пора звенеть
+      if ((TUMBLER && !digitalRead(ALARM_SW) && !alm_flag && alm_mins == mins && alm_hrs == hrs) // есть тумблер, он в положении ВКЛ, будильник не звенит и ему пора звенеть
+         || (!TUMBLER && !alm_flag && alm_mins == mins && alm_hrs == hrs)) { // нет тумблера, будильник не звенит и ему пора звенеть
         //mode = 0;
         alm_flag = true;
         almTimer.start();
@@ -38,13 +38,13 @@ void calculateTime() {
     
     //if (mode == 0) sendTime(hrs, mins);
     if (alm_flag) { // будильник звенит. Проверка для выключения
-      if (TUMBLER && (almTimer.isReady() || digitalRead(ALARM)))
-         || (!TUMBLER && (almTimer.isReady() || flTurnAlarmOff)) { // таймаут будильника или выключили тумблером вручную
+      if ((TUMBLER && (almTimer.isReady() || digitalRead(ALARM_SW)))
+         || (!TUMBLER && (almTimer.isReady() || flTurnAlarmOff))) { // таймаут будильника или выключили тумблером вручную
         alm_flag = false;
 		flTurnAlarmOff = false;
         almTimer.stop();
         //mode = 0;
-        noTone(PIEZO);
+        noNewTone(PIEZO);
         sendTime(hrs, mins);
       }
     }
@@ -53,11 +53,11 @@ void calculateTime() {
   // мигать на будильнике
   if (alm_flag) { // возможно, надо перенести в if (dotFlag)
     if (!dotFlag) {
-      noTone(PIEZO);
+      noNewTone(PIEZO);
       for (byte i = 1; i < 4; i++) indiDigits[i] = 10; // выкл индикаторы - ничего не горит, когда число 10
 	  // или через anodeStates[i] = 0
     } else {
-      tone(PIEZO, FREQ);
+      NewTone(PIEZO, FREQ);
       sendTime(hrs, mins); // или через anodeStates[i] = 1
     }
   }

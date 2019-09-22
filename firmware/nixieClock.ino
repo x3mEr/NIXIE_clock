@@ -40,15 +40,15 @@
 // будильник, кратный часам, т. е. в 00 минут. Проверка соответствия текущего времени времени, на которое настроен будильник. Всегда получается 60 минут. Будильник никогда не сработает.
 
 // ************************** НАСТРОЙКИ **************************
-const byte BOARD_TYPE = 2;
+#define BOARD_TYPE 2
 // тип платы часов:
 // 0 - IN-12 turned (индикаторы стоят правильно)
 // 1 - IN-12 (индикаторы перевёрнуты)
 // 2 - IN-14 (обычная и neon dot)
 // 3 другие индикаторы
-const byte TUMBLER = false; // есть ли тумблер на плате
+#define TUMBLER 0 // есть ли тумблер на плате
 
-const byte DUTY = 180;        // скважность ШИМ. От скважности зависит напряжение! у меня 175 вольт при значении 180 и 145 вольт при 120
+#define DUTY 180        // скважность ШИМ. От скважности зависит напряжение! у меня 175 вольт при значении 180 и 145 вольт при 120
 
 // ---------- ЭФФЕКТЫ ----------
 // эффекты перелистывания часов
@@ -59,9 +59,9 @@ byte FLIP_EFFECT = 1;
 // 2 - перемотка по порядку числа (рекомендуемая скорость: 50-80)
 // 3 - перемотка по порядку катодов в лампе (рекомендуемая скорость: 30-50)
 
-const byte FLIP_SPEED_1 = 140;    // скорость эффекта 1, мс
-const byte FLIP_SPEED_2 = 50;     // скорость эффекта 2, мс
-const byte FLIP_SPEED_3 = 40;     // скорость эффекта 3, мс
+#define FLIP_SPEED_1 130    // скорость эффекта 1, мс
+#define FLIP_SPEED_2 50     // скорость эффекта 2, мс
+#define FLIP_SPEED_3 40     // скорость эффекта 3, мс
 
 // эффекты подсветки
 byte BACKL_MODE = 0;
@@ -71,63 +71,61 @@ byte BACKL_MODE = 0;
 // 2 - выключена
 
 // ---------- ЯРКОСТЬ ----------
-const byte NIGHT_LIGHT = 1;       // менять яркость от времени суток (1 вкл, 0 выкл)
-const byte NIGHT_START = 23;      // час перехода на ночную подсветку (BRIGHT_N)
-const byte NIGHT_END = 7;         // час перехода на дневную подсветку (BRIGHT)
+#define NIGHT_LIGHT 1       // менять яркость от времени суток (1 вкл, 0 выкл)
+#define NIGHT_START 23      // час перехода на ночную подсветку (BRIGHT_N)
+#define NIGHT_END 7         // час перехода на дневную подсветку (BRIGHT)
 
-const byte INDI_BRIGHT = 23;      // яркость цифр дневная (0 - 24) !на 24 могут быть фантомные цифры!
-const byte INDI_BRIGHT_N = 3;     // яркость ночная (0 - 24)
+#define INDI_BRIGHT 23      // яркость цифр дневная (0 - 24) !на 24 могут быть фантомные цифры!
+#define INDI_BRIGHT_N 3     // яркость ночная (0 - 24)
 
-const byte DOT_BRIGHT = 10;       // яркость точки дневная (0 - 255)
-const byte DOT_BRIGHT_N = 3;      // яркость точки ночная (0 - 255)
+#define DOT_BRIGHT 10       // яркость точки дневная (0 - 255)
+#define DOT_BRIGHT_N 3      // яркость точки ночная (0 - 255)
 
-const byte BACKL_BRIGHT = 180;    // яркость подсветки ламп дневная (0 - 255)
-const byte BACKL_BRIGHT_N = 20;   // яркость подсветки ламп ночная (0 - 255)
-const word BACKL_PAUSE = 600;     // пауза "темноты" между вспышками подсветки, мс
+#define BACKL_BRIGHT 180    // яркость подсветки ламп дневная (0 - 255)
+#define BACKL_BRIGHT_N 20   // яркость подсветки ламп ночная (0 - 255)
+#define BACKL_PAUSE 600     // пауза "темноты" между вспышками подсветки, мс
 
 // ----------- ГЛЮКИ -----------
 boolean GLITCH_ALLOWED = 1; // 1 - включить, 0 - выключить глюки. Управляется кнопкой
-const byte GLITCH_MIN = 30;       // минимальное время между глюками, с
-const byte GLITCH_MAX = 120;      // максимальное время между глюками, с
+#define GLITCH_MIN 30       // минимальное время между глюками, с
+#define GLITCH_MAX 120      // максимальное время между глюками, с
 
 // ---------- МИГАНИЕ ----------
-const word DOT_TIME = 500;        // время мигания точки, мс
-const byte DOT_TIMER = 20;        // время герения одного шага яркости точки, мс
+#define DOT_TIME 500        // время мигания точки, мс
+#define DOT_TIMER 100        // время герения одного шага яркости точки, мс
 
-const byte BACKL_STEP = 2;        // шаг мигания подсветки
-const word BACKL_TIME = 5000;     // период подсветки, мс
+#define BACKL_STEP 2        // шаг мигания подсветки
+#define BACKL_TIME 5000     // период подсветки, мс
 
 // --------- ДРУГОЕ --------
-const byte BURN_TIME = 1;         // период обхода в режиме очистки, мс
+#define BURN_TIME 1         // период обхода в режиме очистки, мс
 
 // *********************** ДЛЯ РАЗРАБОТЧИКОВ ***********************
 
 // --------- БУДИЛЬНИК ---------
-const byte ALM_TIMEOUT = 30;      // таймаут будильника, с
-//const word FREQ = 900;            // частота писка будильника
-#define FREQ 900
+#define ALM_TIMEOUT 30      // таймаут будильника, с
+#define FREQ 900            // частота писка будильника
 
 // --------- DHT ---------
-const byte SHOW_TEMP_HUM = 1;     // 0 - не показывать температуру и вл., 1 - показывать
-const byte CLOCK_TIME = 10;       // время (с), которое отображаются часы
-const byte TEMP_TIME = 3;         // время (с), которое отображается температура и влажность
+#define SHOW_TEMP_HUM 0     // 0 - не показывать температуру и вл., 1 - показывать
+#define CLOCK_TIME 10       // время (с), которое отображаются часы
+#define TEMP_TIME 3         // время (с), которое отображается температура и влажность
 
 
 // пины
-const byte ALARM_SW = 1;   // тумблер будильника (при 1 - выкл (подтянут внутренним резистором к +5), 0 - вкл (заземлён))
-//const byte PIEZO = 2;   // пищалка
-#define PIEZO 2
-const byte KEY0 = 3;    // часы
-const byte KEY1 = 4;    // часы 
-const byte KEY2 = 5;    // минуты
-const byte KEY3 = 6;    // минуты
-const byte BTN1 = 7;    // кнопка 1 // SET
-const byte BTN2 = 8;    // кнопка 2 // L
-const byte GEN = 9;     // генератор
-const byte DOT = 10;    // точка
-const byte BACKL = 11;  // подсветка
-const byte BTN3 = 12;   // кнопка 3 // R
-const byte DHT_DATA = 13;   // DHT data pin
+#define ALARM_SW 1   // тумблер будильника (при 1 - выкл (подтянут внутренним резистором к +5), 0 - вкл (заземлён))
+#define PIEZO 2   // пищалка
+#define KEY0 3    // часы
+#define KEY1 4    // часы 
+#define KEY2 5    // минуты
+#define KEY3 6    // минуты
+#define BTN1 7    // кнопка 1 // SET
+#define BTN2 8    // кнопка 2 // L
+#define GEN 9     // генератор
+#define DOT 10    // точка
+#define BACKL 11  // подсветка
+#define BTN3 12   // кнопка 3 // R
+#define DHT_DATA 13   // DHT data pin
 
 // дешифратор
 #define DECODER0 A0
@@ -203,8 +201,8 @@ int dotBrightCounter, backlBrightCounter, indiBrightCounter;
 byte dotBrightStep;		// один шаг (длительностью DOT_TIMER) изменения яркости точки из одного цикла полного зажигания/угасания DOT_TIME в течение DOT_TIMER
 bool newTimeFlag;
 bool flipIndics[4];
-bool flipInit;
 byte newTime[4];
+bool flipInit;
 byte startCathode[4], endCathode[4];
 byte glitchCounter, glitchMax, glitchIndic;
 bool glitchFlag, indiState;
@@ -305,7 +303,6 @@ void setup() {
 }
 
 void loop() {
-// mode vs curMode
   if (dotTimer.isReady() && (curMode == 0 || curMode == 3)) calculateTime();        // каждые 500 мс пересчёт и отправка времени
   if (newTimeFlag && curMode == 0) flipTick();    // перелистывание цифр
   dotBrightTick();                                // плавное мигание точки
@@ -319,7 +316,7 @@ void loop() {
 void modeTick() {
 #if SHOW_TEMP_HUM
   if (curMode == 0) {
-    for (byte i = 0; i < 4; i++) indiDigits[i] = 10; // выкл индикаторы - ничего не горит, когда число 10
+    //for (byte i = 0; i < 4; i++) anodeStates[i] = 0; // выкл индикаторы - ничего не горит, когда число 10
 	  // или через anodeStates[i] = 0
     curMode = 3;
     dotFlag = false;
@@ -329,7 +326,7 @@ void modeTick() {
     modeTimer.setInterval((long)TEMP_TIME * 1000);
   }
   else if (curMode == 3) {
-    for (byte i = 0; i < 4; i++) indiDigits[i] = 10;
+    //for (byte i = 0; i < 4; i++) indiDigits[i] = 10;
     curMode = 0;
     modeTimer.setInterval((long)CLOCK_TIME * 1000);
   }

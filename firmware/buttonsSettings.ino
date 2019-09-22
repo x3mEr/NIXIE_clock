@@ -36,7 +36,7 @@ void buttonsTick() {
     if (btnR.isClick()) {
       if (!currentDigit) {
         changeHrs++;
-        if (changeHrs > 23+TUMBLER) changeHrs = 0; // 24 - alm is OFF
+        if (changeHrs > 23+1-TUMBLER) changeHrs = 0; // 24 - alm is OFF
       } else {
         changeMins++;
         if (changeMins > 59) changeMins = 0;
@@ -46,7 +46,7 @@ void buttonsTick() {
     if (btnL.isClick()) {
       if (!currentDigit) {
         changeHrs--;
-        if (changeHrs < 0) changeHrs = 23+TUMBLER; // 24 - alm is OFF
+        if (changeHrs < 0) changeHrs = 23+1-TUMBLER; // 24 - alm is OFF
       } else {
         changeMins--;
         if (changeMins < 0) changeMins = 59;
@@ -152,7 +152,7 @@ void buttonsTick() {
     //DateTime now = rtc.now();
     //hrs = now.hour();
     //mins = now.minute();
-    //sendTime(hrs, mins);
+    sendTime(hrs, mins);
   }
 
   if (btnSet.isClick()) {

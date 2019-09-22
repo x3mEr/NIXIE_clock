@@ -45,7 +45,11 @@ void calculateTime() {
         almTimer.stop();
         //mode = 0;
         noNewTone(PIEZO);
+        TCCR1B = TCCR1B & 0b11111000 | 1;		// ставим делитель 1
+        // включаем ШИМ  
+        setPWM(9, DUTY);
         sendTime(hrs, mins);
+		for (byte i = 0; i < 4; i++) anodeStates[i] = 1;
       }
     }
   }
@@ -54,11 +58,14 @@ void calculateTime() {
   if (alm_flag) { // возможно, надо перенести в if (dotFlag)
     if (!dotFlag) {
       noNewTone(PIEZO);
-      for (byte i = 1; i < 4; i++) indiDigits[i] = 10; // выкл индикаторы - ничего не горит, когда число 10
+      TCCR1B = TCCR1B & 0b11111000 | 1;		// ставим делитель 1
+      // включаем ШИМ  
+      setPWM(9, DUTY);
+      for (byte i = 0; i < 4; i++) anodeStates[i] = 1; // выкл индикаторы - ничего не горит, когда число 10
 	  // или через anodeStates[i] = 0
     } else {
       NewTone(PIEZO, FREQ);
-      sendTime(hrs, mins); // или через anodeStates[i] = 1
+      for (byte i = 0; i < 4; i++) anodeStates[i] = 0;
     }
   }
 }

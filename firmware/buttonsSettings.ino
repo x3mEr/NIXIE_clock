@@ -92,6 +92,11 @@ void buttonsTick() {
 
     // переключение глюков
     if (btnL.isHolded()) GLITCH_ALLOWED = !GLITCH_ALLOWED;
+	if (btnR.isHolded()) {
+	  TEMPHUM_ALLOWED = !TEMPHUM_ALLOWED;
+	  curMode = 0;
+      sendTime(hrs,mins);
+	}
   }
 
   if (btnSet.isHolded()) {

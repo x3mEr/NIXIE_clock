@@ -61,7 +61,7 @@ byte BACKL_MODE = 0;
 #define BACKL_PAUSE 600		// пауза "темноты" между вспышками подсветки, мс
 
 // ----------- ГЛЮКИ -----------
-boolean GLITCH_ALLOWED = 1;	// 1 - включить, 0 - выключить глюки. Управляется кнопкой
+boolean GLITCH_ALLOWED = 1;	// 1 - включить, 0 - выключить глюки. Управляется удержанием кнопки L/-
 #define GLITCH_MIN 30		// минимальное время между глюками, с
 #define GLITCH_MAX 120		// максимальное время между глюками, с
 
@@ -78,6 +78,7 @@ boolean GLITCH_ALLOWED = 1;	// 1 - включить, 0 - выключить гл
 
 // --------- DHT ---------
 #define SHOW_TEMP_HUM 1		// 0 - не показывать температуру и вл., 1 - показывать
+bool TEMPHUM_ALLOWED = SHOW_TEMP_HUM;	// 1 - включить, 0 - выключить показ темп и влажн. Управляется удержанием кнопки R/+
 #define CLOCK_TIME 10		// время (с), которое отображаются часы
 #define TEMP_TIME 3			// время (с), которое отображается температура и влажность
 
@@ -283,7 +284,9 @@ void loop() {
   if (GLITCH_ALLOWED && (curMode == 0 || curMode == 3) ) glitchTick();	// глюки
   buttonsTick();													// кнопки
   settingsTick();													// настройки
-  if (SHOW_TEMP_HUM && modeTimer.isReady()) modeTick();
+#if SHOW_TEMP_HUM
+  if (TEMPHUM_ALLOWED && modeTimer.isReady()) modeTick();
+#endif
   if (alm_flag && dotFlag) { //в данном случае частоту нельзя регулировать. Она зависит от скорости выполнения loop(). Или использовать NewTone и каждый раз перенастраивать ШИМ для генератора, т. к. библиотека использует тоже использует Timer1 и перенастраивает его под себя.
 	sendTone = !sendTone;
 	digitalWrite(PIEZO, sendTone);

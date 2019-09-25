@@ -29,27 +29,29 @@ void calculateTime() {
       setNewTime();         // обновляем массив времени
       if ((TUMBLER && !digitalRead(ALARM_SW) && !alm_flag && alm_mins == mins && alm_hrs == hrs) // есть тумблер, он в положении ВКЛ, будильник не звенит и ему пора звенеть
          || (!TUMBLER && !alm_flag && alm_mins == mins && alm_hrs == hrs)) { // нет тумблера, будильник не звенит и ему пора звенеть
-        //mode = 0;
+        //curMode = 0;
+		newTimeFlag = false; // если curMode==3, зазвенит, покажет текущее время, но не вызовет flipTick и не сбросит флаг. Т. е. если выключить будильник кнопкой в течение modeTimer (пока длится curMode==3), он  снова зазвенит, т. к. выполнятся все условия: время и newTimeFlag
+        sendTime(hrs,mins); // если сейчас показывает темп и влажн
         alm_flag = true;
         almTimer.start();
         almTimer.reset();
       }
     }
     
-    //if (mode == 0) sendTime(hrs, mins);
     if (alm_flag) { // будильник звенит. Проверка для выключения
       if ((TUMBLER && (almTimer.isReady() || digitalRead(ALARM_SW)))
          || (!TUMBLER && (almTimer.isReady() || flTurnAlarmOff))) { // таймаут будильника или выключили тумблером вручную
         alm_flag = false;
-		flTurnAlarmOff = false;
-        almTimer.stop();
-        //mode = 0;
-        noNewTone(PIEZO);
-        TCCR1B = TCCR1B & 0b11111000 | 1;		// ставим делитель 1
-        // включаем ШИМ  
-        setPWM(9, DUTY);
+        flTurnAlarmOff = false;
+		almTimer.stop();
+        //curMode = 0;
+        digitalWrite(PIEZO,0);
+		/*noNewTone(PIEZO);
+        TCCR1B = TCCR1B & 0b11111000 | 1; // вернуть настройки ШИМ для индикаторов
+        setPWM(9, DUTY);*/
         sendTime(hrs, mins);
-		for (byte i = 0; i < 4; i++) anodeStates[i] = 1;
+        for (byte i = 0; i < 4; i++) anodeStates[i] = 1;
+        modeTimer.setInterval((long)CLOCK_TIME * 1000); // Чтобы после выхода из настроек не попасть на показ темп и влажн - можно запутаться
       }
     }
   }
@@ -57,15 +59,13 @@ void calculateTime() {
   // мигать на будильнике
   if (alm_flag) { // возможно, надо перенести в if (dotFlag)
     if (!dotFlag) {
-      noNewTone(PIEZO);
-      TCCR1B = TCCR1B & 0b11111000 | 1;		// ставим делитель 1
-      // включаем ШИМ  
-      setPWM(9, DUTY);
-      for (byte i = 0; i < 4; i++) anodeStates[i] = 1; // выкл индикаторы - ничего не горит, когда число 10
-	  // или через anodeStates[i] = 0
+	  /*noNewTone(PIEZO); // из-за этого перенастраивается ШИМ
+      TCCR1B = TCCR1B & 0b11111000 | 1; // вернуть настройки ШИМ для индикаторов
+      setPWM(9, DUTY);*/
+      for (byte i = 0; i < 4; i++) anodeStates[i] = 1; // Выкл пищалка, вкл индикаторы. При использовании NewTone нельзя включать индикаторы одновременно с пищалкой, т. к. оба используют Таймер1, но с разными настройками
     } else {
-      NewTone(PIEZO, FREQ);
-      for (byte i = 0; i < 4; i++) anodeStates[i] = 0;
+      for (byte i = 0; i < 4; i++) anodeStates[i] = 0;  // Вкл пищалка, выкд индик. Нельзя включать индикаторы одновременно с пищалкой, т. к. оба используют Таймер1, но с разными настройками
+	  //NewTone(PIEZO, FREQ);
     }
   }
 }

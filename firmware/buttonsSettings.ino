@@ -1,7 +1,7 @@
 void settingsTick() { 					// моргать настраиваемыми числами (часы или минуты)
   if (curMode == 1 || curMode == 2) { 	// в режиме настроек будильника или часов
     if (blinkTimer.isReady()) { 		// пришло время моргать
-      sendTime(changeHrs, changeMins);  // пошлётся то, что настраиваем - будильник или часы
+      //sendTime(changeHrs, changeMins);  // пошлётся то, что настраиваем - будильник или часы
       lampState = !lampState;
       if (lampState) {
         anodeStates[0] = 1;
@@ -76,7 +76,7 @@ void buttonsTick() {
       sendTime(changeHrs, changeMins);
     }
   }
-  else if (curMode == 0) {
+  else if ((curMode == 0) || (curMode == 3)) {
     // переключение эффектов цифр
     if (btnR.isClick()) {
       if (++FLIP_EFFECT >= 4) FLIP_EFFECT = 0;
@@ -100,7 +100,9 @@ void buttonsTick() {
     anodeStates[2] = 1;
     anodeStates[3] = 1;
     currentDigit = false; // настройка часов, TRUE - минут
-    if (++curMode >= 3) curMode = 0;
+	curMode++;
+    if (curMode == 4) curMode = 1; // из show temp попадаем в настройку будильника
+	else if (curMode >= 3) curMode = 0;
     switch (curMode) {
       case 0: // из режима настройки часов в режим часов
         hrs = changeHrs;
@@ -108,7 +110,7 @@ void buttonsTick() {
         modeTimer.setInterval((long)CLOCK_TIME * 1000); // Чтобы после выхода из настроек не попасть на показ темп и влажн - можно запутаться
         rtc.adjust(DateTime(2019, 12, 05, hrs, mins, 0));
         changeBright();
-        //sendTime(hrs, mins);
+        sendTime(hrs, mins);
         break;
       case 1: // попадаем из режима часов в режим настройки будильника
         changeHrs = EEPROM.readByte(0);
@@ -122,11 +124,7 @@ void buttonsTick() {
         alm_mins = changeMins;
         changeHrs = hrs;
         changeMins = mins;
-        // если кто-то будет настраивать будильник более получаса)
-        //DateTime now = rtc.now();
-        //changeHrs = now.hour();
-        //changeMins = now.minute();
-        //sendTime(changeHrs, changeMins);
+        sendTime(changeHrs, changeMins);
         break;
       /*case 3: // попадаем из режима настройки часов в показ темп и влажн. Если нужен такой режим, надо добавить таймер обновления показаний. При входе сюда настроить RTC. По выходу - обновить переменные времени
 	    byte temp = dht.readTemperature();

@@ -92,6 +92,8 @@ void buttonsTick() {
 
     // переключение глюков
     if (btnL.isHolded()) GLITCH_ALLOWED = !GLITCH_ALLOWED;
+	
+	//разрешить/запретить показ темп и влажн
 	if (btnR.isHolded()) {
 	  TEMPHUM_ALLOWED = !TEMPHUM_ALLOWED;
 	  curMode = 0;

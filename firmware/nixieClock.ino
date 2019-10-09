@@ -11,6 +11,7 @@ Effects:
 	- Click "-" in "clock" mode - change backlight mode: breath, always on, off.
 	- Click "+" in "clock" mode - change effects of digits appearance: no effect, smooth fading, rewind in order of number, rewind in order of cathode.
     - Hold "-" - turn the "glitches" on/off.
+    - Hold "+" - turn the "show temp" on/off.
 */
 // если часы отстают, после синхронизации с RTC (раз в полчаса) какое-то время проскакивается - в этот промежуток может быть будильник - тогда он не сработает
 
@@ -75,10 +76,11 @@ boolean GLITCH_ALLOWED = 1;	// 1 - включить, 0 - выключить гл
 // --------- БУДИЛЬНИК ---------
 #define ALM_TIMEOUT 30		// таймаут будильника, с
 #define FREQ 900			// частота писка будильника
+#define BUZZER_PASSIVE 1	// 1 - buzzer is active, 0 - passive. There are 2 methods of alarming in case of passive buzzer: using NewTone library with ability to control frequency FREQ (in this case every time PWM on Timer1 should be reset as pins 3 and 9 use Timer1) and using main loop as "frequency generator", so frequency could not be adjusted and depends on main loop execution time
 
 // --------- DHT ---------
 #define SHOW_TEMP_HUM 1		// 0 - не показывать температуру и вл., 1 - показывать
-bool TEMPHUM_ALLOWED = SHOW_TEMP_HUM;	// 1 - включить, 0 - выключить показ темп и влажн. Управляется удержанием кнопки R/+
+bool TEMPHUM_ALLOWED = SHOW_TEMP_HUM;	// 1 - включить, 0 - выключить показ темп и влажн.
 #define CLOCK_TIME 10		// время (с), которое отображаются часы
 #define TEMP_TIME 3			// время (с), которое отображается температура и влажность
 
@@ -89,7 +91,7 @@ bool TEMPHUM_ALLOWED = SHOW_TEMP_HUM;	// 1 - включить, 0 - выключ�
 #define ALARM_SW 1	// тумблер будильника (при 1 - выкл (подтянут внутренним резистором к +5), 0 - вкл (заземлён))
 #define PIEZO 2		// пищалка
 #define KEY0 3		// часы
-#define KEY1 4		// часы 
+#define KEY1 4		// часы
 #define KEY2 5		// минуты
 #define KEY3 6		// минуты
 #define BTN1 7		// кнопка 1, SET
@@ -278,7 +280,7 @@ void setup() {
 
 void loop() {
   if (dotTimer.isReady() /* && (curMode == 0 || curMode == 3) */) calculateTime();	// каждые 500 мс пересчёт и отправка времени
-  if (newTimeFlag && curMode == 0) flipTick();						// перелистывание цифр. Устанавливает ноое время - можно только при режиме часов
+  if (newTimeFlag && curMode == 0) flipTick();						// перелистывание цифр. Устанавливает новое время - можно только при режиме часов
   dotBrightTick();													// плавное мигание точки
   backlBrightTick();												// плавное мигание подсветки ламп
   if (GLITCH_ALLOWED && (curMode == 0 || curMode == 3) ) glitchTick();	// глюки
@@ -287,10 +289,12 @@ void loop() {
 #if SHOW_TEMP_HUM
   if (TEMPHUM_ALLOWED && modeTimer.isReady()) modeTick();
 #endif
-  if (alm_flag && dotFlag) { //в данном случае частоту нельзя регулировать. Она зависит от скорости выполнения loop(). Или использовать NewTone и каждый раз перенастраивать ШИМ для генератора, т. к. библиотека использует тоже использует Timer1 и перенастраивает его под себя.
-	sendTone = !sendTone;
-	digitalWrite(PIEZO, sendTone);
+#if BUZZER_PASSIVE
+  if (alm_flag && !dotFlag) {
+    sendTone = !sendTone;
+    digitalWrite(PIEZO, sendTone);
   }
+#endif
 }
 
 void modeTick() {

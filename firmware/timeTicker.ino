@@ -45,10 +45,17 @@ void calculateTime() {
         flTurnAlarmOff = false;
 		almTimer.stop();
         //curMode = 0;
-        digitalWrite(PIEZO,0);
-		/*noNewTone(PIEZO);
-        TCCR1B = TCCR1B & 0b11111000 | 1; // вернуть настройки ШИМ для индикаторов
-        setPWM(9, DUTY);*/
+        #if !BUZZER_PASSIVE
+          digitalWrite(PIEZO,0);
+        #endif
+        #if BUZZER_PASSIVE
+          /* 1st method
+          noNewTone(PIEZO);
+          TCCR1B = TCCR1B & 0b11111000 | 1; // bring PWM frequency settings back for generator (indicators)
+          setPWM(9, DUTY);
+          */
+          digitalWrite(PIEZO,0); //2nd method
+        #endif
         sendTime(hrs, mins);
         for (byte i = 0; i < 4; i++) anodeStates[i] = 1;
         modeTimer.setInterval((long)CLOCK_TIME * 1000); // Чтобы после выхода из настроек не попасть на показ темп и влажн - можно запутаться
@@ -56,16 +63,32 @@ void calculateTime() {
     }
   }
 
-  // мигать на будильнике
+  // to ring and to blink
   if (alm_flag) { // возможно, надо перенести в if (dotFlag)
     if (!dotFlag) {
-	  /*noNewTone(PIEZO); // из-за этого перенастраивается ШИМ
-      TCCR1B = TCCR1B & 0b11111000 | 1; // вернуть настройки ШИМ для индикаторов
-      setPWM(9, DUTY);*/
-      for (byte i = 0; i < 4; i++) anodeStates[i] = 1; // Выкл пищалка, вкл индикаторы. При использовании NewTone нельзя включать индикаторы одновременно с пищалкой, т. к. оба используют Таймер1, но с разными настройками
+      for (byte i = 0; i < 4; i++) anodeStates[i] = 0;
+	  #if !BUZZER_PASSIVE
+        digitalWrite(PIEZO,1);
+      #endif
+      #if BUZZER_PASSIVE
+        /* 1st method
+        NewTone(PIEZO, FREQ); // buzzer on, indicators off. They could not be used simultaneously because of Timer1 using
+        */
+        // 2nd method rings in main loop
+      #endif
     } else {
-      for (byte i = 0; i < 4; i++) anodeStates[i] = 0;  // Вкл пищалка, выкд индик. Нельзя включать индикаторы одновременно с пищалкой, т. к. оба используют Таймер1, но с разными настройками
-	  //NewTone(PIEZO, FREQ);
+      #if !BUZZER_PASSIVE
+        digitalWrite(PIEZO,0);
+      #endif
+      #if BUZZER_PASSIVE
+        /* 1st method
+        noNewTone(PIEZO); // now PWM frequency should be re-set for generator (indicators)
+        TCCR1B = TCCR1B & 0b11111000 | 1; // bring PWM frequency settings back for indicators
+        setPWM(9, DUTY);
+        */
+        // 2nd method rings in main loop
+      #endif
+      for (byte i = 0; i < 4; i++) anodeStates[i] = 1;
     }
   }
 }

@@ -1,4 +1,4 @@
-##Retro clock with alarm and DHT22 (temperature and humidity sensor) based on Soviet Union IN-14 (NIXIE in USA) indicators. Firmware and PCB.
+## Retro clock with alarm and DHT22 (temperature and humidity sensor) based on Soviet Union IN-14 (NIXIE in USA) indicators. Firmware and PCB.
 
 First of all, my project is based on two Alex Gyver's projects: [NixieClock] (https://github.com/AlexGyver/NixieClock) and [NixieClock_v2] (https://github.com/AlexGyver/NixieClock_v2).
 Which in turn are based on [Andrey Zhelezniakov's project] (https://itworkclub.ru/arduino-%D1%87%D0%B0%D1%81%D1%8B-%D0%BD%D0%B0-%D0%B3%D0%B0%D0%B7%D0%BE%D1%80%D0%B0%D0%B7%D1%80%D1%8F%D0%B4%D0%BD%D1%8B%D1%85-%D0%B8%D0%BD%D0%B4%D0%B8%D0%BA%D0%B0%D1%82%D0%BE%D1%80%D0%B0%D1%85/).
@@ -6,7 +6,7 @@ Which in turn are based on [Andrey Zhelezniakov's project] (https://itworkclub.r
 *A lot of useful information could be found [there] (https://alexgyver.ru/nixieclock_v2/)*
 
 
-##About
+## About
 
 The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to replace it with microcontroller (*but I'm lazy*).
 The board power supply: 5V.
@@ -30,7 +30,9 @@ Antioxidation procedure every 30 mins.
 	- Click "SET" while alarm ring (in case of alarm switcher absence) - turn alarm off.
 
 **Effects:**
+
 Settings should be done in "clock" mode.
+
 	- Click "-" - change backlight mode:
 		1. breath,
 		2. always on,

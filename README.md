@@ -20,7 +20,7 @@ The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to re
 
 ## Controls
 
-Time and alarm settings.
+**Time and alarm settings.**
 
 	- Hold "SET" - switch between clock modes:
 		0. "show clock", initial and main mode;
@@ -33,7 +33,7 @@ Time and alarm settings.
 
 **Effects:**
 
-Effects settings should be done in "clock" mode.
+*Effects settings should be done in "clock" mode.*
 
 	- Click "-" - change backlight mode:
 		1. breath;

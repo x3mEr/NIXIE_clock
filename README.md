@@ -1,45 +1,44 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+##Retro clock with alarm and DHT22 (temperature and humidity sensor) based on Soviet Union IN-14 (NIXIE in USA) indicators. Firmware and PCB.
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
+First of all, my project is based on two Alex Gyver's projects: [NixieClock] (https://github.com/AlexGyver/NixieClock) and [NixieClock_v2] (https://github.com/AlexGyver/NixieClock_v2).
+Which in turn are based on [Andrey Zhelezniakov's project] (https://itworkclub.ru/arduino-%D1%87%D0%B0%D1%81%D1%8B-%D0%BD%D0%B0-%D0%B3%D0%B0%D0%B7%D0%BE%D1%80%D0%B0%D0%B7%D1%80%D1%8F%D0%B4%D0%BD%D1%8B%D1%85-%D0%B8%D0%BD%D0%B4%D0%B8%D0%BA%D0%B0%D1%82%D0%BE%D1%80%D0%B0%D1%85/).
 
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
+*A lot of useful information could be found [there] (https://alexgyver.ru/nixieclock_v2/)*
 
----
 
-## Edit a file
+##About
 
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
+The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to replace it with microcontroller (*but I'm lazy*).
+The board power supply: 5V.
+Antioxidation procedure every 30 mins.
+2 modes of brightness: day and night modes. The brightness of digits and backlight changes depending on time.
+3 modes of indicators backlight.
+4 modes of digit change.
+2 variants of alarm: with and without alarm switcher. In the latter case, if you do not need the alarm, it should be set to 24 hour (not 00, exactly 24).
+2 types of buzzer: active and passive. While passive buzzer being used, the frequency could be generated with PWM or with main loop (more details are in source code).
 
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: 
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
 
----
+##Controls
 
-## Create a file
+	- Hold "SET" - switch between clock modes:
+		0. initial mode "show clock",
+		1. "set alarm",
+		2. "set clock".
 
-Next, you’ll add a new file to this repository.
+	- Click "SET" in "set alarm" and "set clock" modes - change between setting hours and minutes.
+	- Double click "SET" in "set alarm" mode - exit to "show clock" mode, skipping "set clock" mode.
+	- Click "SET" while alarm ring (in case of alarm switcher absence) - turn alarm off.
 
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
-
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
-
----
-
-## Clone a repository
-
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
-
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
-
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
+**Effects:**
+Settings should be done in "clock" mode.
+	- Click "-" - change backlight mode:
+		1. breath,
+		2. always on,
+		3. off.
+	- Click "+" - change effects of digits' appearance:
+		1. no effect,
+		2. smooth fading,
+		3. rewind in order of number,
+		4. rewind in order of cathode.
+	- Hold "-" - turn the "glitches" on/off.
+	- Hold "+" - turn the "show temp/hum" on/off.

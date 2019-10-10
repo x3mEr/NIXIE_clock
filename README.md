@@ -49,11 +49,11 @@ The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to re
 
 ## Issues
 
-[ ] 1. alarm security issue.
+[  ] 1. alarm security issue.
 
 Clock synchronizes with RTC every half an hour. Let clock is couple of minutes slow. So after synchronization, these couple of minutes will be skipped. The alarm could be set in these skipped time. Some checking flag and timer should be added. This situation is very unlikely since clock is quite precise. So I don't bother.
 
-[ ] 2. replace #define with constexpr.
+[  ] 2. replace #define with constexpr.
 
 1. I tried. But it looks like the compiler can not read constexprs and uses some "default" values.
 Tried to change variable "compiler.c.flags" in file ...\arduino-1.8.10-windows\hardware\arduino\avr\platform.txt: instead of "-std=gnu11", I used different flags "-std=gnu++11", "-std=gnu++14". Nothing changed.

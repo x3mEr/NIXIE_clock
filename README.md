@@ -7,7 +7,7 @@ First of all, my project is based on two Alex Gyver's projects: [NixieClock](htt
 
 ## About
 
-The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to replace it with microcontroller (*but I'm lazy*).
+The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to replace it with microcontroller (*but my ISP programmer doesn't work, I have no time... and I'm lazy*).
 
 - The board power supply: 5V.
 - Antioxidation procedure every 30 mins.
@@ -44,4 +44,10 @@ The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to re
 		3. rewind in order of number;
 		4. rewind in order of cathode.
 	- Hold "-" - turn the "glitches" on/off.
-	- Hold "+" - turn the "show temp/hum" on/off./
+	- Hold "+" - turn the "show temp/hum" on/off.
+
+**Issues**
+
+- [ ] alarm security issue.
+
+Clock synchronizes with RTC every half an hour. Let clock is couple of minutes slow. So after synchronization, these couple of minutes will be skipped. The alarm could be set in these skipped time. Some checking flag and timer should be added. This situation is very unlikely since clock is quite precise. So I don't bother.

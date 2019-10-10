@@ -32,7 +32,7 @@ The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to re
 	- Click "SET" while alarm ring (in case of alarm switcher absence) - turn alarm off.
 
 **Effects settings:**
-*(should be done in "clock" mode)*
+*(should be done in "show clock" mode)*
 
 	- Click "-" - change backlight mode:
 		1. breath;

@@ -65,7 +65,7 @@ void changeBright() {
   }
 
   // расчёт шага яркости точки
-  dotBrightStep = ceil((float)dotMaxBright * 2 / DOT_TIME * DOT_TIMER);
+  dotBrightStep = ceil((float)dotMaxBright * 2 / DOT_TIME * DOT_TIMER); //*2 - because we need to light and extinguish the dot
   if (dotBrightStep == 0) dotBrightStep = 1;
 
   // дыхание подсветки

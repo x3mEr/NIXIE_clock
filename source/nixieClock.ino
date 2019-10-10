@@ -79,8 +79,8 @@ boolean GLITCH_ALLOWED = 1;	// 1 - включить, 0 - выключить гл
 #define BUZZER_PASSIVE 1	// 1 - buzzer is active, 0 - passive. There are 2 methods of alarming in case of passive buzzer: using NewTone library with ability to control frequency FREQ (in this case every time PWM on Timer1 should be reset as pins 3 and 9 use Timer1) and using main loop as "frequency generator", so frequency could not be adjusted and depends on main loop execution time
 
 // --------- DHT ---------
-#define SHOW_TEMP_HUM 1		// 0 - не показывать температуру и вл., 1 - показывать
-bool TEMPHUM_ALLOWED = SHOW_TEMP_HUM;	// 1 - включить, 0 - выключить показ темп и влажн.
+#define TEMP_HUM_SENSOR 1		// is there a DHT22 sensor on board
+bool TEMPHUM_ALLOWED = TEMP_HUM_SENSOR;	// 1 - включить, 0 - выключить показ темп и влажн.
 #define CLOCK_TIME 10		// время (с), которое отображаются часы
 #define TEMP_TIME 3			// время (с), которое отображается температура и влажность
 
@@ -286,7 +286,7 @@ void loop() {
   if (GLITCH_ALLOWED && (curMode == 0 || curMode == 3) ) glitchTick();	// глюки
   buttonsTick();													// кнопки
   settingsTick();													// настройки
-#if SHOW_TEMP_HUM
+#if TEMP_HUM_SENSOR
   if (TEMPHUM_ALLOWED && modeTimer.isReady()) modeTick();
 #endif
 #if BUZZER_PASSIVE
@@ -297,8 +297,8 @@ void loop() {
 #endif
 }
 
+#if TEMP_HUM_SENSOR
 void modeTick() {
-#if SHOW_TEMP_HUM
   if (curMode == 0 && !alm_flag) {
     curMode = 3;
     byte temp = dht.readTemperature();
@@ -312,8 +312,8 @@ void modeTick() {
     sendTime(hrs,mins);
     modeTimer.setInterval((long)CLOCK_TIME * 1000);
   }
-#endif
 }
+#endif
 
 void burnIndicators() {
   for (byte d = 0; d < 10; d++) {

@@ -57,5 +57,4 @@ The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to re
 
 2. I tried. But it looks like the compiler can not read constexprs and uses some "default" values.
 Tried to change variable "compiler.c.flags" in file ...\arduino-1.8.10-windows\hardware\arduino\avr\platform.txt: instead of "-std=gnu11", I used different flags "-std=gnu++11", "-std=gnu++14". Nothing changed.
-
 Result of further research suggests that constexpr object could not be used in #if expression and other replacements are OK. But I do not know other "hidden" features. So, to be confident that clock works properly, I left #define everywhere.

@@ -16,6 +16,7 @@ The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to re
 - 4 modes of digit change.
 - 2 variants of alarm: with and without alarm switcher. In the latter case, if you do not need the alarm, it should be set to 24 hour (not 00, exactly 24).
 - 2 types of buzzer: active and passive. While passive buzzer being used, the frequency could be generated with PWM or with main loop (more details are in source code).
+- Minimum clearance is 0.6 mm for high voltage nets and 0.254 mm (0.4 mm almost everywhere) for data nets.
 
 
 ## Controls
@@ -48,13 +49,13 @@ The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to re
 
 **Issues**
 
-- [ ] alarm security issue.
+- [ ] 1. alarm security issue.
 
 Clock synchronizes with RTC every half an hour. Let clock is couple of minutes slow. So after synchronization, these couple of minutes will be skipped. The alarm could be set in these skipped time. Some checking flag and timer should be added. This situation is very unlikely since clock is quite precise. So I don't bother.
 
-- [ ] replace #define with constexpr.
+- [ ] 2. replace #define with constexpr.
 
-I tried. But it looks like the compiler can not read constexprs and uses some "default" values.
+1. I tried. But it looks like the compiler can not read constexprs and uses some "default" values.
 Tried to change variable "compiler.c.flags" in file ...\arduino-1.8.10-windows\hardware\arduino\avr\platform.txt: instead of "-std=gnu11", I used different flags "-std=gnu++11", "-std=gnu++14". Nothing changed.
 
-Result of further research suggests that constexpr object could not be used in #if expression and other replacements are OK. But I do not know other "hidden" features. So, to be confident that clock works properly, I left #define everywhere.
+2. Result of further research suggests that constexpr object could not be used in #if expression and other replacements are OK. But I do not know other "hidden" features. So, to be confident that clock works properly, I left #define everywhere.

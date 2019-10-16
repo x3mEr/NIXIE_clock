@@ -1,7 +1,7 @@
 ## Retro clock with alarm and DHT22 (temperature and humidity sensor) based on Soviet Union IN-14 (NIXIE in USA) indicators. Firmware and PCB.
 
 First of all, my project is based on two Alex Gyver's projects: [NixieClock](https://github.com/AlexGyver/NixieClock) and [NixieClock_v2](https://github.com/AlexGyver/NixieClock_v2). Which in turn are based on [Andrey Zhelezniakov's project](https://itworkclub.ru/arduino-%D1%87%D0%B0%D1%81%D1%8B-%D0%BD%D0%B0-%D0%B3%D0%B0%D0%B7%D0%BE%D1%80%D0%B0%D0%B7%D1%80%D1%8F%D0%B4%D0%BD%D1%8B%D1%85-%D0%B8%D0%BD%D0%B4%D0%B8%D0%BA%D0%B0%D1%82%D0%BE%D1%80%D0%B0%D1%85/). Which in turn is based on ["Elisa" project](http://www.labkit.ru/html/clock?id=470)... And so on)
-I took project of Alex and just added alarm and DHT sensor support. Alex made a lot of work. His "glitches" effect is awesome! Maybe only it inspired me to repeat his project and add  some stuff for myself.
+I took project of Alex and just fixed some bugs, added alarm function and DHT sensor support. Alex made a lot of work. His "glitches" effect is awesome! Maybe only it inspired me to repeat his project and add some stuff for myself.
 
 *A lot of useful information could be found [here](https://alexgyver.ru/nixieclock_v2/).*
 

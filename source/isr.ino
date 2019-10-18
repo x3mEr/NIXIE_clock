@@ -1,7 +1,7 @@
 // динамическая индикация в прерывании таймера 2
 ISR(TIMER2_COMPA_vect) {
   indiCounter[curIndi]++;             // счётчик индикатора
-  if (indiCounter[curIndi] == indiDimm[curIndi])  // если достигли порога диммирования
+  if (indiCounter[curIndi] >= indiDimm[curIndi])  // если достигли порога диммирования
     setPin(opts[curIndi], 0);         // выключить текущий индикатор
 
   if (indiCounter[curIndi] > 25) {    // достигли порога в 25 единиц

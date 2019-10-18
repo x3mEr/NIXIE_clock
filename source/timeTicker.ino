@@ -9,7 +9,7 @@ void calculateTime() {
       newTimeFlag = true;   // флаг что нужно поменять время
       secs = 0;
       mins++;
-      if (mins == 1 || mins == 30) {    // каждые полчаса
+      if (mins == 1 || mins == 31) {    // каждые полчаса
         burnIndicators();               // чистим чистим!
         DateTime now = rtc.now();       // синхронизация с RTC
         secs = now.second();
@@ -43,7 +43,7 @@ void calculateTime() {
          || (!TUMBLER && (almTimer.isReady() || flTurnAlarmOff))) { // таймаут будильника или выключили тумблером вручную
         alm_flag = false;
         flTurnAlarmOff = false;
-		almTimer.stop();
+        almTimer.stop();
         //curMode = 0;
         #if !BUZZER_PASSIVE
           digitalWrite(PIEZO,0);

@@ -114,9 +114,12 @@ void buttonsTick() {
       case 0: // из режима настройки часов в режим часов
         hrs = changeHrs;
         mins = changeMins;
-        modeTimer.setInterval((long)CLOCK_TIME * 1000); // Чтобы после выхода из настроек не попасть на показ темп и влажн - можно запутаться
-        rtc.adjust(DateTime(2019, 12, 05, hrs, mins, 0));
+		secs = 0;
+        rtc.adjust(DateTime(2019, 12, 05, hrs, mins, secs));
         changeBright();
+		#if TEMP_HUM_SENSOR
+          modeTimer.setInterval((long)CLOCK_TIME * 1000); // Чтобы после выхода из настроек не попасть на показ темп и влажн - можно запутаться
+        #endif
         sendTime(hrs, mins);
         break;
       case 1: // попадаем из режима часов в режим настройки будильника
@@ -152,7 +155,9 @@ void buttonsTick() {
     EEPROM.updateByte(1, changeMins);
     alm_hrs = changeHrs;
     alm_mins = changeMins;
-	modeTimer.setInterval((long)CLOCK_TIME * 1000);
+    #if TEMP_HUM_SENSOR
+      modeTimer.setInterval((long)CLOCK_TIME * 1000); // Чтобы после выхода из настроек не попасть на показ темп и влажн - можно запутаться
+    #endif
     // если кто-то будет настраивать будильник более получаса)
     //DateTime now = rtc.now();
     //hrs = now.hour();

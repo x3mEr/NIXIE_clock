@@ -23,7 +23,7 @@ Effects:
 // 3 другие индикаторы
 #define TUMBLER 0		// is there tumbler on board
 
-#define DUTY 200        // PWM duty. Voltage depends on it. It should be ~175 V on electrolytic capacitor after connecting the load
+#define DUTY 180        // PWM duty. Voltage depends on it. It should be ~175 V on electrolytic capacitor after connecting the load
 
 // ---------- EFFECTS ----------
 byte FLIP_EFFECT = 1; // effects of digits appearance
@@ -45,8 +45,8 @@ byte BACKL_MODE = 0; 		//backlight mode: 0 - breath, 1 - always on, 2 - off
 #define NIGHT_START 23		// hour, when night mode switches on
 #define NIGHT_END 7			// hour, when night mode switches off
 
-#define INDI_BRIGHT 23		// daytime indicators brightness (0 - 23)
-#define INDI_BRIGHT_N 2		// nighttime indicators brightness  (0 - 23)
+#define INDI_BRIGHT 13		// daytime indicators brightness (0 - 23) - at 24 different glitches appear
+#define INDI_BRIGHT_N 3		// nighttime indicators brightness  (0 - 23)
 
 #define DOT_BRIGHT 10		// daytime dot brightness (0 - 255)
 #define DOT_BRIGHT_N 3		// nighttime dot brightness (0 - 255)
@@ -76,7 +76,7 @@ bool TEMPHUM_ALLOWED = TEMP_HUM_SENSOR;	// "show temp/hum" mode: 1 - on, 0 - off
 #define TEMP_TIME 3			// "show temp" mode duration, s
 
 // --------- OTHER --------
-#define BURN_TIME 1			// период обхода в режиме очистки, мс
+#define BURN_TIME 5			// период обхода в режиме очистки, мс
 
 // пины
 #define ALARM_SW 1	// alarm switcher (tumbler): 1 - off (pulled up internally), 0 - on (grounded)

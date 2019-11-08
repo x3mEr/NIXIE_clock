@@ -28,7 +28,6 @@ The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to re
 		0. "show clock", initial and main mode;
 		1. "set alarm";
 		2. "set clock".
-
 	- Click "SET" in "set alarm" and "set clock" modes - change between setting hours and minutes.
 	- Double click "SET" in "set alarm" mode - exit to "show clock" mode, skipping "set clock" mode.
 	- Click "SET" while alarm ring (in case of alarm switcher absence) - turn alarm off.

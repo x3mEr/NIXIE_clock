@@ -68,7 +68,7 @@ void calculateTime() {
     if (!dotFlag) {
       for (byte i = 0; i < 4; i++) anodeStates[i] = 0;
 	  #if !BUZZER_PASSIVE
-        digitalWrite(PIEZO,1);
+        setPin(PIEZO,1);
       #endif
       #if BUZZER_PASSIVE
         /* 1st method
@@ -78,7 +78,7 @@ void calculateTime() {
       #endif
     } else {
       #if !BUZZER_PASSIVE
-        digitalWrite(PIEZO,0);
+        setPin(PIEZO,0);
       #endif
       #if BUZZER_PASSIVE
         /* 1st method

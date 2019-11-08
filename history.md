@@ -1,4 +1,5 @@
 *2019.10.05*
+
 	- settings are stored in EEPROM now;
 	- added 2 flip effects: train and elastic band) ;
 	- mode ("show time" and "show temp") changes after flip effect ends;

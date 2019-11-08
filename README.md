@@ -14,10 +14,13 @@ The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to re
 - Antioxidation procedure every 30 mins.
 - 2 modes of brightness: day and night modes. The brightness of digits and backlight changes depending on time.
 - 3 modes of indicators backlight.
-- 4 modes of digit change.
-- 2 variants of alarm: with and without alarm switcher. In the latter case, if you do not need the alarm, it should be set to 24 hour (not 00, exactly 24).
+- 6 modes of digit change - "flip effects".
+- "glitches" - really cool effect by Alex Gyver. Indicators flicker randomly. It looks ominously)
+- 2 variants of alarm: with and without toggle switcher. In the latter case, if you do not need the alarm, it should be set to 24 hour (not 00, exactly 24). Or you can use toggle switch between GND and pin 13 (by default). Grounded pin 13 means the alarm is set. To disable alarm, just cut pin 13 from GND.
 - 2 types of buzzer: active and passive. While passive buzzer being used, the frequency could be generated with PWM or with main loop (more details are in source code).
-- Minimum clearance is 0.6 mm for high voltage nets and 0.254 mm (0.4 mm almost everywhere) for data nets.
+- All settings are stored in EEPROM.
+- DHT22 sensor support. By default clock shows time for 10 seconds ("show time" mode) and temperature and humidity for 3 seconds ("show temp/hum" mode).
+- Minimum clearance is 0.5 mm for high voltage nets and 0.254 mm (0.4 mm almost everywhere) for data nets.
 
 
 ## Controls
@@ -30,20 +33,22 @@ The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to re
 		2. "set clock".
 	- Click "SET" in "set alarm" and "set clock" modes - change between setting hours and minutes.
 	- Double click "SET" in "set alarm" mode - exit to "show clock" mode, skipping "set clock" mode.
-	- Click "SET" while alarm ring (in case of alarm switcher absence) - turn alarm off.
+	- Click "SET" while alarm ringing - turn alarm off.
 
 **Effects settings:**
 *(should be done in "show clock" mode)*
 
 	- Click "-" - change backlight mode:
-		1. breath;
+		1. "breath";
 		2. always on;
 		3. off.
-	- Click "+" - change effects of digits' appearance:
+	- Click "+" - change effects of digits' appearance (flip effects):
 		1. no effect;
 		2. smooth fading;
 		3. rewind in order of number;
-		4. rewind in order of cathode.
+		4. rewind in order of cathode;
+		5. train;
+		6. elastic band.
 	- Hold "-" - turn the "glitches" on/off.
 	- Hold "+" - turn the "show temp/hum" on/off.
 

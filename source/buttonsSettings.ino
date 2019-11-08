@@ -79,23 +79,36 @@ void buttonsTick() {
   else if ((curMode == 0) || (curMode == 3)) {
     // переключение эффектов цифр
     if (btnR.isClick()) {
-      if (++FLIP_EFFECT >= 4) FLIP_EFFECT = 0;
+      if (++FLIP_EFFECT >= FLIP_EFFECT_NUM) FLIP_EFFECT = 0;
+      EEPROM.updateByte(2, FLIP_EFFECT);
+	  flipTimer.setInterval(FLIP_SPEED[FLIP_EFFECT]);
       for (byte i = 0; i < 4; i++) {
         indiDimm[i] = indiMaxBright;
+		anodeStates[i] = 1;
       }
     }
 
     // переключение эффектов подсветки
     if (btnL.isClick()) {
       if (++BACKL_MODE >= 3) BACKL_MODE = 0;
+	  EEPROM.updateByte(3, BACKL_MODE);
+      if (BACKL_MODE == 1) {
+        setPWM(BACKL, backlMaxBright);
+      } else if (BACKL_MODE == 2) {
+        digitalWrite(BACKL, 0);
+      }
     }
 
     // переключение глюков
-    if (btnL.isHolded()) GLITCH_ALLOWED = !GLITCH_ALLOWED;
+    if (btnL.isHolded()) {
+      GLITCH_ALLOWED = !GLITCH_ALLOWED;
+      EEPROM.updateByte(4, GLITCH_ALLOWED);
+    }
 	
 	//разрешить/запретить показ темп и влажн
 	if (btnR.isHolded()) {
 	  TEMPHUM_ALLOWED = !TEMPHUM_ALLOWED;
+	  EEPROM.updateByte(5, TEMPHUM_ALLOWED);
 	  curMode = 0;
       sendTime(hrs,mins);
 	}
@@ -150,11 +163,10 @@ void buttonsTick() {
     anodeStates[2] = 1;
     anodeStates[3] = 1;
     currentDigit = false; // настройка часов, TRUE - минут
-    curMode = 0;
-    EEPROM.updateByte(0, changeHrs);
-    EEPROM.updateByte(1, changeMins);
     alm_hrs = changeHrs;
     alm_mins = changeMins;
+    EEPROM.updateByte(0, alm_hrs);
+    EEPROM.updateByte(1, alm_mins);
     #if TEMP_HUM_SENSOR
       modeTimer.setInterval((long)CLOCK_TIME * 1000); // Чтобы после выхода из настроек не попасть на показ темп и влажн - можно запутаться
     #endif
@@ -162,6 +174,7 @@ void buttonsTick() {
     //DateTime now = rtc.now();
     //hrs = now.hour();
     //mins = now.minute();
+    curMode = 0;
     sendTime(hrs, mins);
   }
 

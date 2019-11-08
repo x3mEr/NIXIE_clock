@@ -20,11 +20,11 @@ void backlBrightTick() {
       }
     }
     setPWM(BACKL, backlBrightCounter);
-  } else if (BACKL_MODE == 1) {
+  } /* else if (BACKL_MODE == 1) {
     setPWM(BACKL, backlMaxBright);
   } else if (BACKL_MODE == 2) {
     digitalWrite(BACKL, 0);
-  }
+  } */
 }
 
 void dotBrightTick() {

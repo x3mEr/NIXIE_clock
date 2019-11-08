@@ -39,7 +39,7 @@ void calculateTime() {
     }
     
     if (alm_flag) { // будильник звенит. Проверка для выключения
-      if ((TUMBLER && (almTimer.isReady() || digitalRead(ALARM_SW)))
+      if ((TUMBLER && (almTimer.isReady() || digitalRead(ALARM_SW) || flTurnAlarmOff))
          || (!TUMBLER && (almTimer.isReady() || flTurnAlarmOff))) { // таймаут будильника или выключили тумблером вручную
         alm_flag = false;
         flTurnAlarmOff = false;

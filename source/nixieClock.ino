@@ -14,6 +14,15 @@ Effects:
     - Hold "+" - turn the "show temp" on/off.
 */
 
+/* EEPROM map
+0 - alm_hrs
+1 - alm_mins
+2 - FLIP_EFFECT
+3 - BACKL_MODE
+4 - GLITCH_ALLOWED
+5 - TEMPHUM_ALLOWED
+*/
+
 // ************************** SETTINGS **************************
 #define BOARD_TYPE 2
 // тип платы часов:
@@ -26,15 +35,15 @@ Effects:
 #define DUTY 180        // PWM duty. Voltage depends on it. It should be ~175 V on electrolytic capacitor after connecting the load
 
 // ---------- EFFECTS ----------
-byte FLIP_EFFECT = 1; // effects of digits appearance
 // 0 - no effect,
 // 1 - smooth fading (recommended speed: 100-150)
 // 2 - rewind in order of number (recommended speed: 50-80)
 // 3 - rewind in order of cathode (recommended speed: 30-50)
-
-#define FLIP_SPEED_1 130    //ms
-#define FLIP_SPEED_2 50     //ms
-#define FLIP_SPEED_3 40     //ms
+// 4 - train (recommended speed: 50-170)
+// 5 - elastic band (recommended speed: 50-150)
+byte FLIP_EFFECT = 1; // effects of digits appearance
+byte FLIP_SPEED[] = {0, 130, 50, 40, 70, 70}; //ms //, 120};
+byte FLIP_EFFECT_NUM = 6; // the quantity of effect. Should be equal to size of FLIP_SPEED array
 
 byte BACKL_MODE = 0; 		//backlight mode: 0 - breath, 1 - always on, 2 - off
 #define BACKL_STEP 2		//for breath mode: brightness step
@@ -45,8 +54,8 @@ byte BACKL_MODE = 0; 		//backlight mode: 0 - breath, 1 - always on, 2 - off
 #define NIGHT_START 23		// hour, when night mode switches on
 #define NIGHT_END 7			// hour, when night mode switches off
 
-#define INDI_BRIGHT 13		// daytime indicators brightness (0 - 23) - at 24 different glitches appear
-#define INDI_BRIGHT_N 3		// nighttime indicators brightness  (0 - 23)
+#define INDI_BRIGHT 17		// daytime indicators brightness (0 - 23) - at 24 different glitches appear
+#define INDI_BRIGHT_N 7		// nighttime indicators brightness  (0 - 23)
 
 #define DOT_BRIGHT 10		// daytime dot brightness (0 - 255)
 #define DOT_BRIGHT_N 3		// nighttime dot brightness (0 - 255)
@@ -70,27 +79,27 @@ boolean GLITCH_ALLOWED = 1;	// glitches: 1 - on, 0 - off. Could be changed by ho
 #define BUZZER_PASSIVE 1	// 1 - buzzer is active, 0 - passive. There are 2 methods of alarming in case of passive buzzer: using NewTone library with ability to control frequency FREQ (in this case every time PWM on Timer1 should be reset as pins 3 and 9 use Timer1) and using main loop as "frequency generator", so frequency could not be adjusted and depends on main loop execution time
 
 // --------- DHT ---------
-#define TEMP_HUM_SENSOR 1		// is there a DHT22 sensor on board
+#define TEMP_HUM_SENSOR 0		// is there a DHT22 sensor on board. IN CASE OF CHANGING, EEPROM SHOULD BE REINIT - directly coded or by setting with Hold "+" (turn the "show temp" on/off).
 bool TEMPHUM_ALLOWED = TEMP_HUM_SENSOR;	// "show temp/hum" mode: 1 - on, 0 - off. Could be changed by holding R/+
 #define CLOCK_TIME 10		// "show time" mode duration, s
-#define TEMP_TIME 3			// "show temp" mode duration, s
+#define TEMP_TIME 3			// "show temp" mode duration, s - min 2 s - DHT sensor could be read only once in 2 seconds
 
 // --------- OTHER --------
 #define BURN_TIME 5			// период обхода в режиме очистки, мс
 
 // пины
 #define ALARM_SW 1	// alarm switcher (tumbler): 1 - off (pulled up internally), 0 - on (grounded)
-#define PIEZO 2		// пищалка
-#define KEY0 3		// часы
-#define KEY1 4		// часы
-#define KEY2 5		// минуты
-#define KEY3 6		// минуты
-#define BTN1 7		// кнопка 1, SET
-#define BTN2 8		// кнопка 2, L, -
-#define GEN 9		// генератор
-#define DOT 10		// точка
-#define BACKL 11	// подсветка
-#define BTN3 12		// кнопка 3, R, +
+#define PIEZO 2		// buzzer
+#define KEY0 3		// hours
+#define KEY1 4		// hours
+#define KEY2 5		// minutes
+#define KEY3 6		// minutes
+#define BTN1 7		// button 1, SET
+#define BTN2 8		// button 2, L, -
+#define GEN 9		// generator
+#define DOT 10		// dot
+#define BACKL 11	// backlight
+#define BTN3 12		// button 3, R, +
 #define DHT_DATA 13 // DHT data pin
 
 // дешифратор
@@ -139,7 +148,7 @@ GTimer_ms dotTimer(500);                // полсекундный таймер
 GTimer_ms dotBrightTimer(DOT_TIMER);    // таймер шага яркости точки
 GTimer_ms backlBrightTimer(30);         // таймер шага яркости подсветки
 GTimer_ms almTimer((long)ALM_TIMEOUT * 1000);
-GTimer_ms flipTimer(FLIP_SPEED_1);
+GTimer_ms flipTimer(FLIP_SPEED[FLIP_EFFECT]);
 GTimer_ms glitchTimer(1000);
 GTimer_ms blinkTimer(500);
 GTimer_ms modeTimer((long)CLOCK_TIME * 1000);
@@ -175,6 +184,8 @@ int8_t changeHrs, changeMins;
 bool lampState = false;
 bool anodeStates[] = {1, 1, 1, 1};
 bool sendTone;
+byte currentLamp, flipEffectStages;
+bool trainLeaving;
 
 void setDig(byte digit) {
   digit = digitMask[digit];
@@ -231,9 +242,18 @@ void setup() {
     EEPROM.writeByte(100, 77);
     EEPROM.writeByte(0, 24);     // часы будильника - 24 = будильник выкл
     EEPROM.writeByte(1, 30);     // минуты будильника
-    }
+    EEPROM.writeByte(2, FLIP_EFFECT);
+    EEPROM.writeByte(3, BACKL_MODE);
+    EEPROM.writeByte(4, GLITCH_ALLOWED);
+	EEPROM.writeByte(5, TEMPHUM_ALLOWED);
+  }
+    
   alm_hrs = EEPROM.readByte(0);
   alm_mins = EEPROM.readByte(1);
+  FLIP_EFFECT = EEPROM.readByte(2);
+  BACKL_MODE = EEPROM.readByte(3);
+  GLITCH_ALLOWED = EEPROM.readByte(4);
+  TEMPHUM_ALLOWED = EEPROM.readByte(5);
 
   sendTime(hrs, mins);  // отправить время на индикаторы
   if (NIGHT_LIGHT == 0) {
@@ -253,16 +273,7 @@ void setup() {
   glitchTimer.setInterval(random(GLITCH_MIN * 1000L, GLITCH_MAX * 1000L));
 
   // скорость режима при запуске
-  switch (FLIP_EFFECT) {
-    case 0:
-      break;
-    case 1: flipTimer.setInterval(FLIP_SPEED_1);
-      break;
-    case 2: flipTimer.setInterval(FLIP_SPEED_2);
-      break;
-    case 3: flipTimer.setInterval(FLIP_SPEED_3);
-      break;
-  }
+  flipTimer.setInterval(FLIP_SPEED[FLIP_EFFECT]);
 }
 
 void loop() {
@@ -274,11 +285,13 @@ void loop() {
   buttonsTick();													// кнопки
   settingsTick();													// настройки
 #if TEMP_HUM_SENSOR
-  if (TEMPHUM_ALLOWED && modeTimer.isReady()) modeTick();
+  if (!flipInit) {  // wait the end of flip effect. First, check flag and only after this check timer, otherwise timer will be resetted, but condition may be not satisfied (flipInit == true)
+    if (TEMPHUM_ALLOWED && modeTimer.isReady()) modeTick();
+  }
 #endif
 #if BUZZER_PASSIVE
   if (alm_flag && !dotFlag) {
-    sendTone = !sendTone;
+    sendTone = !sendTone; // buzzer frequency is equal to loop frequency
     digitalWrite(PIEZO, sendTone);
   }
 #endif

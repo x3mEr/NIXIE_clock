@@ -5,6 +5,9 @@ void calculateTime() {
     dotBrightDirection = true;
     dotBrightCounter = 0;
     secs++;
+    #if (CHECK_EFFECTS)
+    if (secs % 10 == 0) newTimeFlag = true;
+    #endif
     if (secs > 59) {
       newTimeFlag = true;   // флаг что нужно поменять время
       secs = 0;
@@ -46,7 +49,7 @@ void calculateTime() {
         almTimer.stop();
         //curMode = 0;
         #if !BUZZER_PASSIVE
-          digitalWrite(PIEZO,0);
+          setPin(PIEZO,0);
         #endif
         #if BUZZER_PASSIVE
           /* 1st method
@@ -54,7 +57,7 @@ void calculateTime() {
           TCCR1B = TCCR1B & 0b11111000 | 1; // bring PWM frequency settings back for generator (indicators)
           setPWM(9, DUTY);
           */
-          digitalWrite(PIEZO,0); //2nd method
+          setPin(PIEZO,0); //2nd method
         #endif
         sendTime(hrs, mins);
         for (byte i = 0; i < 4; i++) anodeStates[i] = 1;

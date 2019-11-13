@@ -1,8 +1,9 @@
 **2019.10.13**
 
-- fixed: backlight brightness changes according to daytime (in case of night mode is activated). Bug appeared after 2019.10.06 update, when backlBrightCounter = backlMaxBright or 0 was moved from bright.ino to buttonsSettings.ino.
-- effects 4 (train) and 5 (elastic band) improved: now digits, not anodes, move along the indicators.
-- for alarm beeper in timeTicker.ino setPin() from GyverHacks lib is used (insted of digitalWrite()).
+- fix: backlight brightness changes according to daytime (in case of night mode is activated). Bug appeared after 2019.10.06 update, when backlBrightCounter = backlMaxBright or 0 was moved from bright.ino to buttonsSettings.ino.
+- fix: flipTimer resets at effect initialization.
+- upd: effects 4 (train) and 5 (elastic band) improved: now digits, not anodes, move along the indicators.
+- upd: for alarm beeper in timeTicker.ino setPin() from GyverHacks lib is used (insted of digitalWrite()).
 
 **2019.10.06**
 
@@ -14,12 +15,13 @@
 
 **2019.09.25**
 
-- "show temp" mode can be switched on/off with hold "+" button.
+- add: "show temp" mode can be switched on/off with hold "+" button.
 
 **2019.09.12**
 
-- added DHT22 support (data pin - pin 13 by default).
+- add: added DHT22 support (data pin - pin 13 by default).
 
 **2019.09.09**
 
-- Alarm added. 2 variants are available - software switch and toggle switch (GND - toggle switch - pin 1 by default).
+- fix: condition of brightness change: hrs < NIGHT_END (strictly less).
+- add: alarm added. 2 variants are available - software switch and toggle switch (GND - toggle switch - pin 1 by default).

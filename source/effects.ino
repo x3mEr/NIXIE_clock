@@ -12,6 +12,7 @@ void flipTick() {
         if (indiDigits[i] != newTime[i]) flipIndics[i] = true;
         else flipIndics[i] = false;
       }
+      flipTimer.reset();
     }
     if (flipTimer.isReady()) {
       if (!indiBrightDirection) {
@@ -45,6 +46,7 @@ void flipTick() {
         if (indiDigits[i] != newTime[i]) flipIndics[i] = true;
         else flipIndics[i] = false;
       }
+      flipTimer.reset();
     }
 
     if (flipTimer.isReady()) {
@@ -83,6 +85,7 @@ void flipTick() {
         }
         else flipIndics[i] = false;
       }
+      flipTimer.reset();
     }
 
     if (flipTimer.isReady()) {

@@ -71,5 +71,8 @@ void changeBright() {
   // дыхание подсветки
   backlBrightTimer.setInterval((float)BACKL_STEP / backlMaxBright / 2 * BACKL_TIME);
   indiBrightCounter = indiMaxBright;
+  
+  //change PWM to apply backlMaxBright in case of maximum bright mode
+  if (BACKL_MODE == 1) setPWM(BACKL, backlMaxBright);
 #endif
 }

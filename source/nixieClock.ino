@@ -30,7 +30,6 @@ Effects:
 // 1 - IN-12 (индикаторы перевёрнуты)
 // 2 - IN-14 (обычная и neon dot)
 // 3 другие индикаторы
-#define TUMBLER 0		// is there tumbler on board
 
 #define DUTY 180        // PWM duty. Voltage depends on it. It should be ~175 V on electrolytic capacitor after connecting the load
 
@@ -39,11 +38,12 @@ Effects:
 // 1 - smooth fading (recommended speed: 100-150)
 // 2 - rewind in order of number (recommended speed: 50-80)
 // 3 - rewind in order of cathode (recommended speed: 30-50)
-// 4 - train (recommended speed: 50-170)
-// 5 - elastic band (recommended speed: 50-150)
+// 4 - train (recommended speed: 110-150)
+// 5 - elastic band (recommended speed: 70-120)
+#define CHECK_EFFECTS 0 //timeTicker.ino - resets newTimeFlag every 10 secs in lines 8-10
 byte FLIP_EFFECT = 1; // effects of digits appearance
-byte FLIP_SPEED[] = {0, 130, 50, 40, 70, 70}; //ms //, 120};
-byte FLIP_EFFECT_NUM = 6; // the quantity of effect. Should be equal to size of FLIP_SPEED array
+const byte FLIP_SPEED[] = {0, 130, 50, 40, 130, 80}; //ms //, 120};
+const byte FLIP_EFFECT_NUM = 6; // the quantity of effect. Should be equal to size of FLIP_SPEED array
 
 byte BACKL_MODE = 0; 		//backlight mode: 0 - breath, 1 - always on, 2 - off
 #define BACKL_STEP 2		//for breath mode: brightness step
@@ -76,10 +76,11 @@ boolean GLITCH_ALLOWED = 1;	// glitches: 1 - on, 0 - off. Could be changed by ho
 // --------- ALARM ---------
 #define ALM_TIMEOUT 30		// alarm timeout, s
 #define FREQ 900			// buzzer frequency, is applicable only if buzzer is passive and NewTone library is used.
-#define BUZZER_PASSIVE 1	// 1 - buzzer is active, 0 - passive. There are 2 methods of alarming in case of passive buzzer: using NewTone library with ability to control frequency FREQ (in this case every time PWM on Timer1 should be reset as pins 3 and 9 use Timer1) and using main loop as "frequency generator", so frequency could not be adjusted and depends on main loop execution time
+#define TUMBLER 0		// is there tumbler on board
+#define BUZZER_PASSIVE 1	// 0 - buzzer is active, 1 - is passive. There are 2 methods of alarming in case of passive buzzer: using NewTone library with ability to control frequency FREQ (in this case every time PWM on Timer1 should be reset as pins 3 and 9 use Timer1) and using main loop as "frequency generator", so frequency could not be adjusted and depends on main loop execution time
 
 // --------- DHT ---------
-#define TEMP_HUM_SENSOR 0		// is there a DHT22 sensor on board. IN CASE OF CHANGING, EEPROM SHOULD BE REINIT - directly coded or by setting with Hold "+" (turn the "show temp" on/off).
+#define TEMP_HUM_SENSOR 1		// is there a DHT22 sensor on board. IN CASE OF CHANGING, EEPROM SHOULD BE REINIT - directly coded or by setting with Hold "+" (turn the "show temp" on/off).
 bool TEMPHUM_ALLOWED = TEMP_HUM_SENSOR;	// "show temp/hum" mode: 1 - on, 0 - off. Could be changed by holding R/+
 #define CLOCK_TIME 10		// "show time" mode duration, s
 #define TEMP_TIME 3			// "show temp" mode duration, s - min 2 s - DHT sensor could be read only once in 2 seconds
@@ -110,24 +111,24 @@ bool TEMPHUM_ALLOWED = TEMP_HUM_SENSOR;	// "show temp/hum" mode: 1 - on, 0 - off
 
 // распиновка ламп
 #if (BOARD_TYPE == 0)
-byte digitMask[] = {7, 3, 6, 4, 1, 9, 8, 0, 5, 2};   // маска дешифратора платы in12_turned (цифры нормальные)
-byte opts[] = {KEY0, KEY1, KEY2, KEY3};              // порядок индикаторов слева направо
-byte cathodeMask[] = {1, 6, 2, 7, 5, 0, 4, 9, 8, 3}; // порядок катодов in12
+const byte digitMask[] = {7, 3, 6, 4, 1, 9, 8, 0, 5, 2};   // маска дешифратора платы in12_turned (цифры нормальные)
+const byte opts[] = {KEY0, KEY1, KEY2, KEY3};              // порядок индикаторов слева направо
+const byte cathodeMask[] = {1, 6, 2, 7, 5, 0, 4, 9, 8, 3}; // порядок катодов in12
 
 #elif (BOARD_TYPE == 1)
-byte digitMask[] = {2, 8, 1, 9, 6, 4, 3, 5, 0, 7};   // маска дешифратора платы in12 (цифры вверх ногами)
-byte opts[] = {KEY3, KEY2, KEY1, KEY0};              // порядок индикаторов справа налево (для IN-12 turned и ин-14)
-byte cathodeMask[] = {1, 6, 2, 7, 5, 0, 4, 9, 8, 3}; // порядок катодов in12
+const byte digitMask[] = {2, 8, 1, 9, 6, 4, 3, 5, 0, 7};   // маска дешифратора платы in12 (цифры вверх ногами)
+const byte opts[] = {KEY3, KEY2, KEY1, KEY0};              // порядок индикаторов справа налево (для IN-12 turned и ин-14)
+const byte cathodeMask[] = {1, 6, 2, 7, 5, 0, 4, 9, 8, 3}; // порядок катодов in12
 
 #elif (BOARD_TYPE == 2)
-byte digitMask[] = {9, 8, 0, 5, 4, 7, 3, 6, 2, 1};   // маска дешифратора платы in14
-byte opts[] = {KEY3, KEY2, KEY1, KEY0};              // порядок индикаторов справа налево (для IN-12 turned и ин-14)
-byte cathodeMask[] = {1, 0, 2, 9, 3, 8, 4, 7, 5, 6}; // порядок катодов in14
+const byte digitMask[] = {9, 8, 0, 5, 4, 7, 3, 6, 2, 1};   // маска дешифратора платы in14
+const byte opts[] = {KEY3, KEY2, KEY1, KEY0};              // порядок индикаторов справа налево (для IN-12 turned и ин-14)
+const byte cathodeMask[] = {1, 0, 2, 9, 3, 8, 4, 7, 5, 6}; // порядок катодов in14
 
 #elif (BOARD_TYPE == 3)
-byte digitMask[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};   // тут вводим свой порядок пинов
-byte opts[] = {KEY0, KEY1, KEY2, KEY3};              // свой порядок индикаторов
-byte cathodeMask[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; // и свой порядок катодов
+const byte digitMask[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};   // тут вводим свой порядок пинов
+const byte opts[] = {KEY0, KEY1, KEY2, KEY3};              // свой порядок индикаторов
+const byte cathodeMask[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; // и свой порядок катодов
 
 #endif
 
@@ -164,7 +165,7 @@ volatile int8_t indiDigits[4];    // цифры, которые должны п�
 volatile int8_t curIndi;          // текущий индикатор (0-3)
 
 int8_t hrs, mins, secs;
-int8_t alm_hrs = 24, alm_mins = 0; // 24 - alarm is OFF
+int8_t alm_hrs, alm_mins; //alm_hrs = 24 - alarm is OFF
 bool blinkFlag;
 byte indiMaxBright = INDI_BRIGHT, dotMaxBright = DOT_BRIGHT, backlMaxBright = BACKL_BRIGHT;
 bool dotFlag = true, alm_flag = false, flTurnAlarmOff = false;
@@ -197,7 +198,7 @@ void setDig(byte digit) {
 
 void setup() {
   //Serial.begin(9600);
-  randomSeed(analogRead(6) + analogRead(7)); //for glithes
+  randomSeed(analogRead(6) + analogRead(7)); //for glitches
 
   //pins setup
   pinMode(DECODER0, OUTPUT);
@@ -292,7 +293,7 @@ void loop() {
 #if BUZZER_PASSIVE
   if (alm_flag && !dotFlag) {
     sendTone = !sendTone; // buzzer frequency is equal to loop frequency
-    digitalWrite(PIEZO, sendTone);
+    setPin(PIEZO, sendTone);
   }
 #endif
 }

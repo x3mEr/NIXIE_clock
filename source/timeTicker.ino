@@ -12,12 +12,23 @@ void calculateTime() {
       newTimeFlag = true;   // флаг что нужно поменять время
       secs = 0;
       mins++;
-      if (mins == 1 || mins == 31) {    // каждые полчаса
+      if (mins == 1 && !fl_syncedAt1) {    // каждые полчаса
         burnIndicators();               // чистим чистим!
         DateTime now = rtc.now();       // синхронизация с RTC
         secs = now.second();
         mins = now.minute();
         hrs = now.hour();
+        fl_syncedAt1 = true;
+        fl_syncedAt31 = false;
+      }
+      else if (mins == 31 && !fl_syncedAt31) {    // каждые полчаса
+        burnIndicators();               // чистим чистим!
+        DateTime now = rtc.now();       // синхронизация с RTC
+        secs = now.second();
+        mins = now.minute();
+        hrs = now.hour();
+        fl_syncedAt31 = true;
+        fl_syncedAt1 = false;
       }
     }
 

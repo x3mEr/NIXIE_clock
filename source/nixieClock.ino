@@ -186,7 +186,7 @@ bool lampState = false;
 bool anodeStates[] = {1, 1, 1, 1};
 bool sendTone;
 byte currentLamp, flipEffectStages;
-bool trainLeaving;
+bool trainLeaving, fl_syncedAt1 = false, fl_syncedAt31 = false;
 
 void setDig(byte digit) {
   digit = digitMask[digit];

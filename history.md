@@ -1,3 +1,7 @@
+**2019.10.15**
+
+- fix: if RTC is slower than time computation on arduino with dotTimer, this caused freezes (and even crashes), repeatedly running synchronization (in some sense, it is similar to limits in mathematical analysis). Now synchronization is limited to once every 30 min.
+
 **2019.10.13**
 
 - fix: backlight brightness changes according to daytime (in case of night mode is activated). Bug appeared after 2019.10.06 update, when backlBrightCounter = backlMaxBright or 0 was moved from bright.ino to buttonsSettings.ino.
@@ -7,11 +11,11 @@
 
 **2019.10.06**
 
-- settings are stored in EEPROM now.
-- added 2 flip effects: train and elastic band).
-- mode ("show time" and "show temp") changes after flip effect ends.
-- fixed bug with speed of flip effect after changing it - previoulsy the speed remained the same. It turned out it was hardcoded.
-- now backlMaxBright and 0 apply only once (while changing with middle button) - moved from bright.ino to buttonsSettings.ino.
+- add: settings are stored in EEPROM now.
+- add: added 2 flip effects: train and elastic band).
+- upd: mode ("show time" and "show temp") changes after flip effect ends.
+- fix: fixed bug with speed of flip effect after changing it - previoulsy the speed remained the same. It turned out it was hardcoded.
+- upd: now backlMaxBright and 0 apply only once (while changing with middle button) - moved from bright.ino to buttonsSettings.ino.
 
 **2019.09.25**
 

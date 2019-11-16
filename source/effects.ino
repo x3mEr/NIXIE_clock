@@ -30,6 +30,7 @@ void flipTick() {
           // выходим из цикла изменения
           flipInit = false;
           newTimeFlag = false;
+          modeTimer.reset();
         }
       }
       for (byte i = 0; i < 4; i++)
@@ -64,6 +65,7 @@ void flipTick() {
         // выходим из цикла изменения
         flipInit = false;
         newTimeFlag = false;
+        modeTimer.reset();
       }
     }
 
@@ -109,6 +111,7 @@ void flipTick() {
         // выходим из цикла изменения
         flipInit = false;
         newTimeFlag = false;
+        modeTimer.reset();
       }
     }
   }
@@ -144,6 +147,7 @@ void flipTick() {
         if (currentLamp >= 4) {
           flipInit = false;
           newTimeFlag = false;
+          modeTimer.reset();
         }
       }
     }
@@ -231,6 +235,7 @@ void flipTick() {
         case 21:
           flipInit = false;
           newTimeFlag = false;
+          modeTimer.reset();
       }
     }
   }
@@ -293,6 +298,7 @@ void flipTick() {
         case 14:
           flipInit = false;
           newTimeFlag = false;
+          modeTimer.reset();
       }
     }
   }

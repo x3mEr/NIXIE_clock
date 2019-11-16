@@ -72,7 +72,9 @@ void calculateTime() {
         //curMode = 0;
         sendTime(hrs, mins);
         for (byte i = 0; i < 4; i++) anodeStates[i] = 1;
-        modeTimer.setInterval((long)CLOCK_TIME * 1000); // Чтобы после выхода из настроек не попасть на показ темп и влажн - можно запутаться
+        #if TEMP_HUM_SENSOR
+          modeTimer.setInterval((long)CLOCK_TIME * 1000); // Чтобы после выхода из настроек не попасть на показ темп и влажн - можно запутаться
+        #endif
       }
     }
   }

@@ -44,21 +44,17 @@ void calculateTime() {
       if ((TUMBLER && !digitalRead(ALARM_SW) && !alm_flag && alm_mins == mins && alm_hrs == hrs) // есть тумблер, он в положении ВКЛ, будильник не звенит и ему пора звенеть
          || (!TUMBLER && !alm_flag && alm_mins == mins && alm_hrs == hrs)) { // нет тумблера, будильник не звенит и ему пора звенеть
         //curMode = 0;
-		newTimeFlag = false; // если curMode==3, зазвенит, покажет текущее время, но не вызовет flipTick и не сбросит флаг. Т. е. если выключить будильник кнопкой в течение modeTimer (пока длится curMode==3), он  снова зазвенит, т. к. выполнятся все условия: время и newTimeFlag
+		newTimeFlag = false; // если curMode==3, зазвенит, покажет текущее время, но не вызовет flipTick и не сбросит флаг. Т. е. если выключить будильник кнопкой в течение modeTimer (пока длится curMode==3) или пока не закончится flip эффект, он  снова зазвенит, т. к. выполнятся все условия: время и newTimeFlag
         sendTime(hrs,mins); // если сейчас показывает темп и влажн
         alm_flag = true;
         almTimer.start();
         almTimer.reset();
       }
     }
-    
+
     if (alm_flag) { // будильник звенит. Проверка для выключения
       if ((TUMBLER && (almTimer.isReady() || digitalRead(ALARM_SW) || flTurnAlarmOff))
          || (!TUMBLER && (almTimer.isReady() || flTurnAlarmOff))) { // таймаут будильника или выключили тумблером вручную
-        alm_flag = false;
-        flTurnAlarmOff = false;
-        almTimer.stop();
-        //curMode = 0;
         #if !BUZZER_PASSIVE
           setPin(PIEZO,0);
         #endif
@@ -70,6 +66,10 @@ void calculateTime() {
           */
           setPin(PIEZO,0); //2nd method
         #endif
+        alm_flag = false;
+        flTurnAlarmOff = false;
+        almTimer.stop();
+        //curMode = 0;
         sendTime(hrs, mins);
         for (byte i = 0; i < 4; i++) anodeStates[i] = 1;
         modeTimer.setInterval((long)CLOCK_TIME * 1000); // Чтобы после выхода из настроек не попасть на показ темп и влажн - можно запутаться

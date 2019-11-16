@@ -282,9 +282,9 @@ void loop() {
   if (newTimeFlag && curMode == 0) flipTick();						// перелистывание цифр. Устанавливает новое время - можно только при режиме часов
   dotBrightTick();													// плавное мигание точки
   backlBrightTick();												// плавное мигание подсветки ламп
-  if (GLITCH_ALLOWED && (curMode == 0 || curMode == 3) ) glitchTick();	// глюки
+  if (GLITCH_ALLOWED && (curMode == 0 || curMode == 3)) glitchTick(); // глюки
   buttonsTick();													// кнопки
-  settingsTick();													// настройки
+  if (curMode == 1 || curMode == 2) settingsTick();					// настройки
 #if TEMP_HUM_SENSOR
   if (!flipInit) {  // wait the end of flip effect. First, check flag and only after this check timer, otherwise timer will be resetted, but condition may be not satisfied (flipInit == true)
     if (TEMPHUM_ALLOWED && modeTimer.isReady()) modeTick();

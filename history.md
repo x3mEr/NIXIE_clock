@@ -1,3 +1,8 @@
+**2019.10.17**
+
+- fix: disabled unwanted buttons clicks for different clock modes. Before this update, it was possible, for example, to go to settings or changes backlight mode while alarming, turn glitches off in "set alarm" mode...
+- upd: modeTimer is reset after flipping effect to stay in "showClock" mode.
+
 **2019.10.15**
 
 - fix: if RTC is slower than time computation on arduino with dotTimer, this caused freezes (and even crashes), repeatedly running synchronization (in some sense, it is similar to limits in mathematical analysis). Now synchronization is limited to once every 30 min.

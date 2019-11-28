@@ -208,8 +208,10 @@ glitches will be turned on/off after leaving "set alarm" mode, in "show clock" m
 
   if (btnSet.isClick()) {
     if (curMode == 1 || curMode == 2) currentDigit = !currentDigit; // выбор настройки часов или минут
-    #if TUMBLER
+    /*#if !TUMBLER
 	  else if (!TUMBLER && alm_flag) flTurnAlarmOff = true; //будильник звенит, выключить кнопкой SET
     #endif
+	*/
+	else if (alm_flag) flTurnAlarmOff = true; //будильник звенит, выключить кнопкой SET
   }
 }

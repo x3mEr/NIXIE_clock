@@ -6,7 +6,7 @@
     - Hold "SET" - switch between modes: "clock", "set alarm", "set clock".
     - Click "SET" in "set alarm" and "set clock" modes - change between setting hours and minutes.
     - Double click "SET" in "set alarm" mode - exit to "show clock" mode.
-    - Click "SET" while alarm ring - turn alarm off.
+    - Click "SET" while alarm rings - turn alarm off.
 Effects:
 	- Click "-" in "clock" mode - change backlight mode: breath, always on, off.
 	- Click "+" in "clock" mode - change effects of digits appearance: no effect, smooth fading, rewind in order of number, rewind in order of cathode.
@@ -40,10 +40,11 @@ Effects:
 // 3 - rewind in order of cathode (recommended speed: 30-50)
 // 4 - train (recommended speed: 110-150)
 // 5 - elastic band (recommended speed: 70-120)
-#define CHECK_EFFECTS 0 //timeTicker.ino - resets newTimeFlag every 10 secs in lines 8-10
+#define CHECK_EFFECTS 0 //lines 8-10 in timeTicker.ino reset newTimeFlag every 10 secs
 byte FLIP_EFFECT = 1; // effects of digits appearance
-const byte FLIP_SPEED[] = {0, 130, 50, 40, 130, 80}; //ms //, 120};
-const byte FLIP_EFFECT_NUM = 6; // the quantity of effect. Should be equal to size of FLIP_SPEED array
+const byte FLIP_SPEED[] = {0, 130, 70, 70, 120, 80}; //ms //, 120};
+const byte FLIP_EFFECT_NUM = (sizeof(FLIP_SPEED)/sizeof(*FLIP_SPEED)); // the quantity of effect. Should be equal to size of FLIP_SPEED array
+//const byte FLIP_EFFECT_NUM = 6; // the quantity of effect. Should be equal to size of FLIP_SPEED array
 
 byte BACKL_MODE = 0; 		//backlight mode: 0 - breath, 1 - always on, 2 - off
 #define BACKL_STEP 2		//for breath mode: brightness step
@@ -60,8 +61,8 @@ byte BACKL_MODE = 0; 		//backlight mode: 0 - breath, 1 - always on, 2 - off
 #define DOT_BRIGHT 10		// daytime dot brightness (0 - 255)
 #define DOT_BRIGHT_N 3		// nighttime dot brightness (0 - 255)
 
-#define BACKL_BRIGHT 180	// daytime backlight brightness (0 - 255)
-#define BACKL_BRIGHT_N 30	// nighttime backlight brightness (0 - 255))
+#define BACKL_BRIGHT 130	// daytime backlight brightness (0 - 255)
+#define BACKL_BRIGHT_N 10	// nighttime backlight brightness (0 - 255))
 #define BACKL_PAUSE 600		// delay (=dark) between backlight flashes, ms
 
 // ----------- GLITCHES -----------
@@ -76,11 +77,11 @@ boolean GLITCH_ALLOWED = 1;	// glitches: 1 - on, 0 - off. Could be changed by ho
 // --------- ALARM ---------
 #define ALM_TIMEOUT 30		// alarm timeout, s
 #define FREQ 900			// buzzer frequency, is applicable only if buzzer is passive and NewTone library is used.
-#define TUMBLER 0		// is there tumbler on board
-#define BUZZER_PASSIVE 1	// 0 - buzzer is active, 1 - is passive. There are 2 methods of alarming in case of passive buzzer: using NewTone library with ability to control frequency FREQ (in this case every time PWM on Timer1 should be reset as pins 3 and 9 use Timer1) and using main loop as "frequency generator", so frequency could not be adjusted and depends on main loop execution time
+#define TUMBLER 1		// is there tumbler on board
+#define BUZZER_PASSIVE 0	// 0 - buzzer is active, 1 - is passive. There are 2 methods of alarming in case of passive buzzer: using NewTone library with ability to control frequency FREQ (in this case every time PWM on Timer1 should be reset as pins 3 and 9 use Timer1) and using main loop as "frequency generator", so frequency could not be adjusted and depends on main loop execution time
 
 // --------- DHT ---------
-#define TEMP_HUM_SENSOR 1		// is there a DHT22 sensor on board. IN CASE OF CHANGING, EEPROM SHOULD BE REINIT - directly coded or by setting with Hold "+" (turn the "show temp" on/off).
+#define TEMP_HUM_SENSOR 0		// is there a DHT22 sensor on board. IN CASE OF CHANGING, EEPROM SHOULD BE REINIT - directly coded or by setting with Hold "+" (turn the "show temp" on/off).
 bool TEMPHUM_ALLOWED = TEMP_HUM_SENSOR;	// "show temp/hum" mode: 1 - on, 0 - off. Could be changed by holding R/+
 #define CLOCK_TIME 10		// "show time" mode duration, s
 #define TEMP_TIME 3			// "show temp" mode duration, s - min 2 s - DHT sensor could be read only once in 2 seconds
@@ -88,7 +89,7 @@ bool TEMPHUM_ALLOWED = TEMP_HUM_SENSOR;	// "show temp/hum" mode: 1 - on, 0 - off
 // --------- OTHER --------
 #define BURN_TIME 5			// период обхода в режиме очистки, мс
 
-// пины
+// pins
 #define ALARM_SW 1	// alarm switcher (tumbler): 1 - off (pulled up internally), 0 - on (grounded)
 #define PIEZO 2		// buzzer
 #define KEY0 3		// hours
@@ -218,7 +219,7 @@ void setup() {
   // задаем частоту ШИМ на 9 и 10 выводах 31 кГц
   TCCR1B = TCCR1B & 0b11111000 | 1;		// ставим делитель 1
   // включаем ШИМ  
-  setPWM(9, DUTY);
+  setPWM(9, DUTY); //GEN
   // перенастраиваем частоту ШИМ на пинах 3 и 11 на 7.8 кГц и разрешаем прерывания COMPA
   TCCR2B = (TCCR2B & B11111000) | 2;    // делитель 8
   TCCR2A |= (1 << WGM21);   // включить CTC режим для COMPA

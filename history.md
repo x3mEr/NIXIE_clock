@@ -1,3 +1,7 @@
+**2019.11.29**
+
+- upd: new flip effect "smooth cross fading" added.
+
 **2019.11.28**
 
 - fix: after code optimisation in 2019.11.17 update bug with alarm appeared. It was impossible to turn it off with button SET regardless of board type (with or without toggle switch).

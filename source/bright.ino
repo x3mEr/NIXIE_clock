@@ -3,7 +3,7 @@ void backlBrightTick() {
     if (backlBrightDirection) {
       if (!backlBrightFlag) {
         backlBrightFlag = true;
-        backlBrightTimer.setInterval((float)BACKL_STEP / backlMaxBright / 2 * BACKL_TIME);
+        backlBrightTimer.setInterval((float)BACKL_STEP / backlMaxBright / 2 * backlMaxTime);
       }
       backlBrightCounter += BACKL_STEP;
       if (backlBrightCounter >= backlMaxBright) {
@@ -55,10 +55,12 @@ void changeBright() {
     indiMaxBright = INDI_BRIGHT_N;
     dotMaxBright = DOT_BRIGHT_N;
     backlMaxBright = BACKL_BRIGHT_N;
+    backlMaxTime = BACKL_TIME_N;
   } else {
     indiMaxBright = INDI_BRIGHT;
     dotMaxBright = DOT_BRIGHT;
     backlMaxBright = BACKL_BRIGHT;
+    backlMaxTime = BACKL_TIME;
   }
   for (byte i = 0; i < 4; i++) {
     indiDimm[i] = indiMaxBright;
@@ -69,7 +71,7 @@ void changeBright() {
   if (dotBrightStep == 0) dotBrightStep = 1;
 
   // дыхание подсветки
-  backlBrightTimer.setInterval((float)BACKL_STEP / backlMaxBright / 2 * BACKL_TIME);
+  backlBrightTimer.setInterval((float)BACKL_STEP / backlMaxBright / 2 * backlMaxTime);
   indiBrightCounter = indiMaxBright;
   
   //change PWM to apply backlMaxBright in case of maximum bright mode

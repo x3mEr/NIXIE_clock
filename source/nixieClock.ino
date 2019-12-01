@@ -49,13 +49,14 @@ const byte FLIP_EFFECT_NUM = (sizeof(FLIP_SPEED)/sizeof(*FLIP_SPEED)); // the qu
 byte BACKL_MODE = 0; 		//backlight mode: 0 - breath, 1 - always on, 2 - off
 #define BACKL_STEP 2		//for breath mode: brightness step
 #define BACKL_TIME 5000		//for breath mode: backlight period, ms
+#define BACKL_TIME_N 3000		//for breath mode: backlight period, ms
 
 // ---------- BRIGHTNESS ----------
 #define NIGHT_LIGHT 1		// night mode: 1 - on, 0 - off
 #define NIGHT_START 23		// hour, when night mode switches on
 #define NIGHT_END 7			// hour, when night mode switches off
 
-#define INDI_BRIGHT 17		// daytime indicators brightness (0 - 23) - at 24 different glitches appear
+#define INDI_BRIGHT 19		// daytime indicators brightness (0 - 23) - at 24 different glitches appear
 #define INDI_BRIGHT_N 7		// nighttime indicators brightness  (0 - 23)
 
 #define DOT_BRIGHT 10		// daytime dot brightness (0 - 255)
@@ -169,6 +170,7 @@ int8_t hrs, mins, secs;
 int8_t alm_hrs, alm_mins; //alm_hrs = 24 - alarm is OFF
 bool blinkFlag;
 byte indiMaxBright = INDI_BRIGHT, dotMaxBright = DOT_BRIGHT, backlMaxBright = BACKL_BRIGHT;
+int backlMaxTime = BACKL_TIME;
 bool dotFlag = true, alm_flag = false, flTurnAlarmOff = false;
 bool dotBrightFlag, dotBrightDirection, backlBrightFlag, backlBrightDirection, indiBrightDirection;
 int dotBrightCounter, backlBrightCounter, indiBrightCounter;
@@ -266,7 +268,7 @@ void setup() {
     dotBrightStep = ceil((float)dotMaxBright * 2 / DOT_TIME * DOT_TIMER);
     if (dotBrightStep == 0) dotBrightStep = 1;
     // дыхание подсветки
-    backlBrightTimer.setInterval((float)BACKL_STEP / backlMaxBright / 2 * BACKL_TIME);
+    backlBrightTimer.setInterval((float)BACKL_STEP / backlMaxBright / 2 * backlMaxTime);
     indiBrightCounter = indiMaxBright;
    }
    else changeBright();       // всё то же самое, но в функции, которая компилится только если NIGHT_LIGHT - изменить яркость согласно времени суток

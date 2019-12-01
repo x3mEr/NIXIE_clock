@@ -1,5 +1,5 @@
 void settingsTick() { 					// моргать настраиваемыми числами (часы или минуты)
-  //if (curMode == 1 || curMode == 2) { 	// в режиме настроек будильника или часов
+  //if (curMode == 1 || curMode == 2) { 	// в режиме настроек будильника или часов //this state is checked in main loop right before execution this function
     if (blinkTimer.isReady()) { 		// пришло время моргать
       //sendTime(changeHrs, changeMins);  // пошлётся то, что настраиваем - будильник или часы
       lampState = !lampState;

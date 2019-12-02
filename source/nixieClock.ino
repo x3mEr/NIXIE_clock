@@ -40,16 +40,18 @@ Effects:
 // 3 - rewind in order of cathode (recommended speed: 30-50)
 // 4 - train (recommended speed: 110-150)
 // 5 - elastic band (recommended speed: 70-120)
-#define CHECK_EFFECTS 0 //lines 8-10 in timeTicker.ino reset newTimeFlag every 10 secs
+// 6 - glitchy flip (recommended speed: 40)
+#define CHECK_EFFECTS 0 //lines 8-10 in timeTicker.ino speed up the time))
 byte FLIP_EFFECT = 1; // effects of digits appearance
-const byte FLIP_SPEED[] = {0, 130, 70, 70, 120, 80}; //ms //, 120};
+const byte FLIP_SPEED[] = {0, 130, 70, 70, 120, 80, 40}; //ms //, 120};
 const byte FLIP_EFFECT_NUM = (sizeof(FLIP_SPEED)/sizeof(*FLIP_SPEED)); // the quantity of effect. Should be equal to size of FLIP_SPEED array
 //const byte FLIP_EFFECT_NUM = 6; // the quantity of effect. Should be equal to size of FLIP_SPEED array
 
 byte BACKL_MODE = 0; 		//backlight mode: 0 - breath, 1 - always on, 2 - off
-#define BACKL_STEP 2		//for breath mode: brightness step
+#define BACKL_STEP 3		//for breath mode: brightness step
+#define BACKL_STEP_N 1		//for breath mode: brightness step
 #define BACKL_TIME 5000		//for breath mode: backlight period, ms
-#define BACKL_TIME_N 3000		//for breath mode: backlight period, ms
+#define BACKL_TIME_N 3000	//for breath mode: backlight period, ms
 
 // ---------- BRIGHTNESS ----------
 #define NIGHT_LIGHT 1		// night mode: 1 - on, 0 - off
@@ -169,15 +171,15 @@ volatile int8_t curIndi;          // текущий индикатор (0-3)
 int8_t hrs, mins, secs;
 int8_t alm_hrs, alm_mins; //alm_hrs = 24 - alarm is OFF
 bool blinkFlag;
-byte indiMaxBright = INDI_BRIGHT, dotMaxBright = DOT_BRIGHT, backlMaxBright = BACKL_BRIGHT;
-int backlMaxTime = BACKL_TIME;
+byte indiMaxBright = INDI_BRIGHT, dotMaxBright = DOT_BRIGHT, backlMaxBright = BACKL_BRIGHT, backlMaxStep = BACKL_STEP;
+int backlMaxTime = BACKL_TIME, backlInterval;
 bool dotFlag = true, alm_flag = false, flTurnAlarmOff = false;
 bool dotBrightFlag, dotBrightDirection, backlBrightFlag, backlBrightDirection, indiBrightDirection;
 int dotBrightCounter, backlBrightCounter, indiBrightCounter;
 byte dotBrightStep;		// один шаг (длительностью DOT_TIMER) изменения яркости точки из одного цикла полного зажигания/угасания DOT_TIME в течение DOT_TIMER
 bool newTimeFlag;
 bool flipIndics[4];
-byte newTime[4];
+byte newTime[4], oldTime[4];
 bool flipInit;
 byte startCathode[4], endCathode[4];
 byte glitchCounter, glitchMax, glitchIndic;
@@ -188,7 +190,7 @@ int8_t changeHrs, changeMins;
 bool lampState = false;
 bool anodeStates[] = {1, 1, 1, 1};
 bool sendTone;
-byte currentLamp, flipEffectStages;
+byte currentLamp, flipEffectStages, flipGlitchMax;
 bool trainLeaving, fl_syncedAt1 = false, fl_syncedAt31 = false;
 
 void setDig(byte digit) {

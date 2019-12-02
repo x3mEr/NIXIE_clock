@@ -250,6 +250,43 @@ void flipTick() {
     }
   }
 
+// --- glitchy flip --- //
+  else if (FLIP_EFFECT == 6) {
+    if (!flipInit) {
+      flipInit = true;
+      // запоминаем, какие цифры поменялись и будем менять их яркость
+      for (byte i = 0; i < 4; i++) {
+        oldTime[i] = indiDigits[i];
+        if (indiDigits[i] != newTime[i]) flipIndics[i] = true;
+        else flipIndics[i] = false;
+      }
+      indiBrightDirection = 0;
+      indiBrightCounter = 0;
+      flipGlitchMax = random(3, 7);
+      flipTimer.setInterval(random(1, 6) * FLIP_SPEED[FLIP_EFFECT]);
+      flipTimer.reset();
+    }
+    if (flipTimer.isReady()) {
+      for (byte i = 0; i < 4; i++)
+        if (flipIndics[i]) {
+          if (indiBrightDirection) indiDigits[i] = newTime[i];
+          else indiDigits[i] = oldTime[i];
+        }
+      indiBrightDirection = !indiBrightDirection;
+      flipTimer.setInterval(random(1, 6) * FLIP_SPEED[FLIP_EFFECT]);
+      indiBrightCounter++;
+      if (indiBrightCounter > flipGlitchMax) {
+        //flipTimer.setInterval(random(GLITCH_MIN * 1000L, GLITCH_MAX * 1000L));
+	  	flipInit = false;
+        newTimeFlag = false;
+		sendTime(hrs, mins); //effect can stop at indiDigits[i] = oldTime[i], so newTime should be send
+        #if TEMP_HUM_SENSOR
+          modeTimer.reset();
+        #endif
+      }
+    }
+  }
+
 /*// --- binary like elastic band --- //
   else if (FLIP_EFFECT == 6) {
     if (!flipInit) {

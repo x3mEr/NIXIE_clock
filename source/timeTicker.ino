@@ -6,7 +6,7 @@ void calculateTime() {
     dotBrightCounter = 0;
     secs++;
     #if (CHECK_EFFECTS)
-    if (secs % 10 == 0) newTimeFlag = true;
+      secs += 9;
     #endif
     if (secs > 59) {
       newTimeFlag = true;   // флаг что нужно поменять время

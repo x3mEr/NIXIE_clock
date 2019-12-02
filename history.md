@@ -1,6 +1,11 @@
-**2019.11.29**
+**2019.12.2**
 
-- upd: new flip effect "smooth cross fading" added.
+- add: backlight night step "BACKL_STEP_N" introduced. Improving the previous update (backlight night timer), to make the baklight's bright change more smooth at nighttime.
+- add: new flip effect "glitchy flip" added.
+
+**2019.11.30**
+
+- add: backlight night timer introduced. At nighttime, when the baklight brightness is low, it changes with steps. To make bright change smooth, the baklight's cycle duration could be shorter than at daytime.
 
 **2019.11.28**
 

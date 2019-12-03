@@ -43,30 +43,32 @@ Effects:
 // 6 - glitchy flip (recommended speed: 40)
 #define CHECK_EFFECTS 0 //lines 8-10 in timeTicker.ino speed up the time))
 byte FLIP_EFFECT = 1; // effects of digits appearance
-const byte FLIP_SPEED[] = {0, 130, 70, 70, 120, 80, 40}; //ms //, 120};
+const byte FLIP_SPEED[] = {0, 130, 70, 70, 120, 80, 40}; //ms
 const byte FLIP_EFFECT_NUM = (sizeof(FLIP_SPEED)/sizeof(*FLIP_SPEED)); // the quantity of effect. Should be equal to size of FLIP_SPEED array
 //const byte FLIP_EFFECT_NUM = 6; // the quantity of effect. Should be equal to size of FLIP_SPEED array
 
 byte BACKL_MODE = 0; 		//backlight mode: 0 - breath, 1 - always on, 2 - off
 #define BACKL_STEP 3		//for breath mode: brightness step
-#define BACKL_STEP_N 1		//for breath mode: brightness step
+#define BACKL_STEP_N 1		//for breath mode: brightness night step
 #define BACKL_TIME 5000		//for breath mode: backlight period, ms
-#define BACKL_TIME_N 3000	//for breath mode: backlight period, ms
+#define BACKL_TIME_N 3000	//for breath mode: backlight night period, ms
 
-// ---------- BRIGHTNESS ----------
+// ---------- DAYTIME AND NIGHTTIME BRIGHTNESS ----------
 #define NIGHT_LIGHT 1		// night mode: 1 - on, 0 - off
 #define NIGHT_START 23		// hour, when night mode switches on
 #define NIGHT_END 7			// hour, when night mode switches off
 
-#define INDI_BRIGHT 19		// daytime indicators brightness (0 - 23) - at 24 different glitches appear
-#define INDI_BRIGHT_N 7		// nighttime indicators brightness  (0 - 23)
+#define INDI_BRIGHT 19		// daytime indicators brightness (1 - 23) - at 24 different glitches appear
+#define INDI_BRIGHT_N 7		// nighttime indicators brightness  (1 - 23)
 
-#define DOT_BRIGHT 10		// daytime dot brightness (0 - 255)
-#define DOT_BRIGHT_N 3		// nighttime dot brightness (0 - 255)
+#define DOT_BRIGHT 10		// daytime dot brightness (1 - 255)
+#define DOT_BRIGHT_N 3		// nighttime dot brightness (1 - 255)
 
-#define BACKL_BRIGHT 130	// daytime backlight brightness (0 - 255)
-#define BACKL_BRIGHT_N 10	// nighttime backlight brightness (0 - 255))
-#define BACKL_PAUSE 600		// delay (=dark) between backlight flashes, ms
+#define BACKL_BRIGHT 130		// daytime backlight brightness (1 - 255)
+#define BACKL_BRIGHT_MINIMUM 10	// minimum brightness for "breathing" effect (0 - BACKL_BRIGHT_N)
+#define BACKL_BRIGHT_N 10		// nighttime backlight brightness (1 - 255))
+#define BACKL_BRIGHT_MINIMUM_N 1// minimum brightness for "breathing" effect at night (0 - BACKL_BRIGHT_N)
+#define BACKL_PAUSE 600			// delay (=dark) between backlight flashes, ms
 
 // ----------- GLITCHES -----------
 boolean GLITCH_ALLOWED = 1;	// glitches: 1 - on, 0 - off. Could be changed by holding L/-
@@ -171,7 +173,7 @@ volatile int8_t curIndi;          // текущий индикатор (0-3)
 int8_t hrs, mins, secs;
 int8_t alm_hrs, alm_mins; //alm_hrs = 24 - alarm is OFF
 bool blinkFlag;
-byte indiMaxBright = INDI_BRIGHT, dotMaxBright = DOT_BRIGHT, backlMaxBright = BACKL_BRIGHT, backlMaxStep = BACKL_STEP;
+byte indiMaxBright = INDI_BRIGHT, dotMaxBright = DOT_BRIGHT, backlMaxBright = BACKL_BRIGHT, backlMinBright = BACKL_BRIGHT_MINIMUM, backlMaxStep = BACKL_STEP;
 int backlMaxTime = BACKL_TIME, backlInterval;
 bool dotFlag = true, alm_flag = false, flTurnAlarmOff = false;
 bool dotBrightFlag, dotBrightDirection, backlBrightFlag, backlBrightDirection, indiBrightDirection;

@@ -12,14 +12,14 @@ void backlBrightTick() {
       }
     } else {
       backlBrightCounter -= backlMaxStep;
-      if (backlBrightCounter <= 0) {
+      if (backlBrightCounter <= backlMinBright) {
         backlBrightDirection = true;
-        backlBrightCounter = 0;
+        backlBrightCounter = backlMinBright;
         backlBrightTimer.setInterval(BACKL_PAUSE);
         backlBrightFlag = false;
       }
     }
-    setPWM(BACKL, backlBrightCounter);
+    analogWrite(BACKL, backlBrightCounter); //setPWM does not turn off the PWM, so backl is always on
   } /* else if (BACKL_MODE == 1) {
     setPWM(BACKL, backlMaxBright);
   } else if (BACKL_MODE == 2) {
@@ -47,20 +47,21 @@ void dotBrightTick() {
   }
 }
 
-void changeBright() {
+void changeBright() { //change brightness of indicators, dot and backl according to time
 #if (NIGHT_LIGHT == 1)
-  // установка яркости всех светилок от времени суток
   if ( (hrs >= NIGHT_START && hrs <= 23)
        || (hrs >= 0 && hrs < NIGHT_END) ) {
     indiMaxBright = INDI_BRIGHT_N;
     dotMaxBright = DOT_BRIGHT_N;
     backlMaxBright = BACKL_BRIGHT_N;
+    backlMinBright = BACKL_BRIGHT_MINIMUM_N;
     backlMaxTime = BACKL_TIME_N;
     backlMaxStep = BACKL_STEP_N;
   } else {
     indiMaxBright = INDI_BRIGHT;
     dotMaxBright = DOT_BRIGHT;
     backlMaxBright = BACKL_BRIGHT;
+    backlMinBright = BACKL_BRIGHT_MINIMUM;
     backlMaxTime = BACKL_TIME;
     backlMaxStep = BACKL_STEP;
   }
@@ -73,11 +74,16 @@ void changeBright() {
   if (dotBrightStep == 0) dotBrightStep = 1;
 
   // дыхание подсветки
-  backlInterval = (float)backlMaxStep / backlMaxBright / 2 * backlMaxTime;
+  backlInterval = (float)backlMaxStep / (backlMaxBright-backlMinBright) / 2 * backlMaxTime; //*2 - because we need to light and extinguish the backl
   backlBrightTimer.setInterval(backlInterval);
   indiBrightCounter = indiMaxBright;
   
-  //change PWM to apply backlMaxBright in case of maximum bright mode
+  /*to apply brightness changes to backl immediately
+  if (backlBrightDirection) backlBrightCounter = backlMinBright;
+  else backlBrightCounter = backlMaxBright; */
+  
+  //change PWM to apply backlMaxBright in case of maximum bright mode,
+  //since in case of BACKL_MODE == 1, setPWM is executed only by clicking button "-" (in case of mode changing)
   if (BACKL_MODE == 1) setPWM(BACKL, backlMaxBright);
 #endif
 }

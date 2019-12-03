@@ -45,11 +45,11 @@ The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to re
 	- Click "+" - change effects of digits' appearance (flip effects):
 		1. no effect;
 		2. smooth fading;
-		3. smooth cross fading;
-		4. rewind in order of number;
-		5. rewind in order of cathode;
-		6. train;
-		7. elastic band.
+		3. rewind in order of number;
+		4. rewind in order of cathode;
+		5. train;
+		6. elastic band;
+		7. glitchy flip.
 	- Hold "-" - turn the "glitches" on/off.
 	- Hold "+" - turn the "show temp/hum" on/off.
 

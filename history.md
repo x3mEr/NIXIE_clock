@@ -1,6 +1,12 @@
+**2020.06.15**
+
+- upd: default settings changed.
+- upd: some comments were translated.
+- fix: typos.
+
 **2019.12.2**
 
-- add: added minimum baklight brightness for day and night.
+- add: added minimum baсklight brightness for day and night.
 - upd: now analogWrite() is used insted of setPWM() from GyverHacks lib. setPWM() does not turn off the PWM, so backlight was always on. It looks cool, but now, after introducing minimum backlight brightness, analogWrite() can be used for proper work.
 
 **2019.12.2**

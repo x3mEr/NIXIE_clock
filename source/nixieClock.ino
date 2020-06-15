@@ -42,10 +42,10 @@ Effects:
 // 5 - elastic band (recommended speed: 70-120)
 // 6 - glitchy flip (recommended speed: 40)
 #define CHECK_EFFECTS 0 //lines 8-10 in timeTicker.ino speed up the time))
-byte FLIP_EFFECT = 1; // effects of digits appearance
+byte FLIP_EFFECT = 1; // effect of digits appearance
 const byte FLIP_SPEED[] = {0, 130, 70, 70, 120, 80, 40}; //ms
-const byte FLIP_EFFECT_NUM = (sizeof(FLIP_SPEED)/sizeof(*FLIP_SPEED)); // the quantity of effect. Should be equal to size of FLIP_SPEED array
-//const byte FLIP_EFFECT_NUM = 6; // the quantity of effect. Should be equal to size of FLIP_SPEED array
+const byte FLIP_EFFECT_NUM = (sizeof(FLIP_SPEED)/sizeof(*FLIP_SPEED)); // the number of effects. Should be equal to the length of FLIP_SPEED array
+//const byte FLIP_EFFECT_NUM = 6; // the quantity of effect. Should be equal to the length of FLIP_SPEED array
 
 byte BACKL_MODE = 0; 		//backlight mode: 0 - breath, 1 - always on, 2 - off
 #define BACKL_STEP 3		//for breath mode: brightness step
@@ -55,18 +55,18 @@ byte BACKL_MODE = 0; 		//backlight mode: 0 - breath, 1 - always on, 2 - off
 
 // ---------- DAYTIME AND NIGHTTIME BRIGHTNESS ----------
 #define NIGHT_LIGHT 1		// night mode: 1 - on, 0 - off
-#define NIGHT_START 23		// hour, when night mode switches on
-#define NIGHT_END 7			// hour, when night mode switches off
+#define NIGHT_START 22		// hour, when night mode switches on
+#define NIGHT_END 8			// hour, when night mode switches off
 
 #define INDI_BRIGHT 19		// daytime indicators brightness (1 - 23) - at 24 different glitches appear
-#define INDI_BRIGHT_N 7		// nighttime indicators brightness  (1 - 23)
+#define INDI_BRIGHT_N 9		// nighttime indicators brightness  (1 - 23)
 
 #define DOT_BRIGHT 10		// daytime dot brightness (1 - 255)
 #define DOT_BRIGHT_N 3		// nighttime dot brightness (1 - 255)
 
 #define BACKL_BRIGHT 130		// daytime backlight brightness (1 - 255)
-#define BACKL_BRIGHT_MINIMUM 10	// minimum brightness for "breathing" effect (0 - BACKL_BRIGHT_N)
-#define BACKL_BRIGHT_N 10		// nighttime backlight brightness (1 - 255))
+#define BACKL_BRIGHT_MINIMUM 1	// minimum brightness for "breathing" effect (0 - BACKL_BRIGHT)
+#define BACKL_BRIGHT_N 8		// nighttime backlight brightness (1 - 255))
 #define BACKL_BRIGHT_MINIMUM_N 1// minimum brightness for "breathing" effect at night (0 - BACKL_BRIGHT_N)
 #define BACKL_PAUSE 600			// delay (=dark) between backlight flashes, ms
 
@@ -82,17 +82,17 @@ boolean GLITCH_ALLOWED = 1;	// glitches: 1 - on, 0 - off. Could be changed by ho
 // --------- ALARM ---------
 #define ALM_TIMEOUT 30		// alarm timeout, s
 #define FREQ 900			// buzzer frequency, is applicable only if buzzer is passive and NewTone library is used.
-#define TUMBLER 1		// is there tumbler on board
+#define TUMBLER 1			// is there tumbler on board
 #define BUZZER_PASSIVE 0	// 0 - buzzer is active, 1 - is passive. There are 2 methods of alarming in case of passive buzzer: using NewTone library with ability to control frequency FREQ (in this case every time PWM on Timer1 should be reset as pins 3 and 9 use Timer1) and using main loop as "frequency generator", so frequency could not be adjusted and depends on main loop execution time
 
 // --------- DHT ---------
-#define TEMP_HUM_SENSOR 0		// is there a DHT22 sensor on board. IN CASE OF CHANGING, EEPROM SHOULD BE REINIT - directly coded or by setting with Hold "+" (turn the "show temp" on/off).
+#define TEMP_HUM_SENSOR 1	// is there a DHT22 sensor on board. IN CASE OF CHANGING, EEPROM SHOULD BE REINIT - directly coded or by setting with Hold "+" (turn the "show temp" on/off).
 bool TEMPHUM_ALLOWED = TEMP_HUM_SENSOR;	// "show temp/hum" mode: 1 - on, 0 - off. Could be changed by holding R/+
 #define CLOCK_TIME 10		// "show time" mode duration, s
 #define TEMP_TIME 3			// "show temp" mode duration, s - min 2 s - DHT sensor could be read only once in 2 seconds
 
 // --------- OTHER --------
-#define BURN_TIME 5			// период обхода в режиме очистки, мс
+#define BURN_TIME 10		// период обхода в режиме очистки, мс
 
 // pins
 #define ALARM_SW 1	// alarm switcher (tumbler): 1 - off (pulled up internally), 0 - on (grounded)

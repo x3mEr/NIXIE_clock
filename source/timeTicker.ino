@@ -9,21 +9,21 @@ void calculateTime() {
       secs += 9;
     #endif
     if (secs > 59) {
-      newTimeFlag = true;   // флаг что нужно поменять время
+      newTimeFlag = true;   // flag means that time shown on display should be changed
       secs = 0;
       mins++;
-      if (mins == 1 && !fl_syncedAt1) {    // каждые полчаса
-        burnIndicators();               // чистим чистим!
-        DateTime now = rtc.now();       // синхронизация с RTC
+      if (mins == 1 && !fl_syncedAt1) {	// every half an hour
+        burnIndicators();				// чистим чистим!
+        DateTime now = rtc.now();		// sync with RTC
         secs = now.second();
         mins = now.minute();
         hrs = now.hour();
         fl_syncedAt1 = true;
         fl_syncedAt31 = false;
       }
-      else if (mins == 31 && !fl_syncedAt31) {    // каждые полчаса
-        burnIndicators();               // чистим чистим!
-        DateTime now = rtc.now();       // синхронизация с RTC
+      else if (mins == 31 && !fl_syncedAt31) {	// every half an hour
+        burnIndicators();						// чистим чистим!
+        DateTime now = rtc.now();				// sync with RTC
         secs = now.second();
         mins = now.minute();
         hrs = now.hour();
@@ -40,21 +40,21 @@ void calculateTime() {
     }
 
     if (newTimeFlag) {
-      setNewTime();         // обновляем массив времени
-      if ((TUMBLER && !digitalRead(ALARM_SW) && !alm_flag && alm_mins == mins && alm_hrs == hrs) // есть тумблер, он в положении ВКЛ, будильник не звенит и ему пора звенеть
-         || (!TUMBLER && !alm_flag && alm_mins == mins && alm_hrs == hrs)) { // нет тумблера, будильник не звенит и ему пора звенеть
+      setNewTime();         // update time digits array
+      if ((TUMBLER && !digitalRead(ALARM_SW) && !alm_flag && alm_mins == mins && alm_hrs == hrs) // there is the tumbler, it is toggled ON, alarm is not ringing and it's time to ring
+         || (!TUMBLER && !alm_flag && alm_mins == mins && alm_hrs == hrs)) { // there is not the tumbler, alarm is not ringing and it's time to ring
         //curMode = 0;
-		newTimeFlag = false; // если curMode==3, зазвенит, покажет текущее время, но не вызовет flipTick и не сбросит флаг. Т. е. если выключить будильник кнопкой в течение modeTimer (пока длится curMode==3) или пока не закончится flip эффект, он  снова зазвенит, т. к. выполнятся все условия: время и newTimeFlag
-        sendTime(hrs,mins); // если сейчас показывает темп и влажн
+		newTimeFlag = false; // if curMode==3, alarm will ring, will show current time, but won't call flipTick and 'newTimeFlag' won't be reset. I. e., if turn alarm off with the button during modeTimer (while curMode==3) or while flip effect, alarm will ring again, as all conditions are fulfilled: current time == alarm time and newTimeFlag==True
+        sendTime(hrs,mins); // if temp and humidity are on display (lol, display)
         alm_flag = true;
         almTimer.start();
         almTimer.reset();
       }
     }
 
-    if (alm_flag) { // будильник звенит. Проверка для выключения
+    if (alm_flag) { // alarm is ringing. Check for turning it off.
       if ((TUMBLER && (almTimer.isReady() || digitalRead(ALARM_SW) || flTurnAlarmOff))
-         || (!TUMBLER && (almTimer.isReady() || flTurnAlarmOff))) { // таймаут будильника или выключили тумблером вручную
+         || (!TUMBLER && (almTimer.isReady() || flTurnAlarmOff))) { // alarm timed out or was turned off with the tumbler
         #if !BUZZER_PASSIVE
           setPin(PIEZO,0);
         #endif
@@ -73,13 +73,13 @@ void calculateTime() {
         sendTime(hrs, mins);
         for (byte i = 0; i < 4; i++) anodeStates[i] = 1;
         #if TEMP_HUM_SENSOR
-          modeTimer.setInterval((long)CLOCK_TIME * 1000); // Чтобы после выхода из настроек не попасть на показ темп и влажн - можно запутаться
+          modeTimer.setInterval((long)CLOCK_TIME * 1000); // Not to be confused with temp and humidity on display after exiting settings
         #endif
       }
     }
   }
 
-  // to ring and to blink
+  // to ring and blink
   if (alm_flag) { // возможно, надо перенести в if (dotFlag)
     if (!dotFlag) {
       for (byte i = 0; i < 4; i++) anodeStates[i] = 0;

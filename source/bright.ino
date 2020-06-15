@@ -19,7 +19,7 @@ void backlBrightTick() {
         backlBrightFlag = false;
       }
     }
-    analogWrite(BACKL, backlBrightCounter); //setPWM does not turn off the PWM, so backl is always on
+    analogWrite(BACKL, backlBrightCounter); //setPWM does not turn off the PWM (digitalWrite does), so backl is always on. In case of PWM==0, func 'analogWrite' calls 'digitalWrite' internally to turn the PWM off.
   } /* else if (BACKL_MODE == 1) {
     setPWM(BACKL, backlMaxBright);
   } else if (BACKL_MODE == 2) {

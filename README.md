@@ -42,7 +42,7 @@ The clock is driven by Arduino Nano v3.0 with ATmega328. It would be great to re
 		1. "breath";
 		2. always on;
 		3. off.
-	- Click "+" - change effects of digits' appearance (flip effects):
+	- Click "+" - change effect of digits' appearance (flip effect):
 		1. no effect;
 		2. smooth fading;
 		3. rewind in order of number;

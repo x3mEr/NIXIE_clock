@@ -1,3 +1,7 @@
+/*  Copyright (C) 2019  Pavel Smelov
+	This program is licensed under GNU GPLv3
+	The full notice can be found in the nixieClock.ino */
+
 // динамическая индикация в прерывании таймера 2
 ISR(TIMER2_COMPA_vect) {
   indiCounter[curIndi]++;             // счётчик индикатора

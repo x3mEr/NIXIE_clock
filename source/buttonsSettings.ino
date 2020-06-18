@@ -1,3 +1,7 @@
+/*  Copyright (C) 2019  Pavel Smelov
+	This program is licensed under GNU GPLv3
+	The full notice can be found in the nixieClock.ino */
+
 void settingsTick() { 					// моргать настраиваемыми числами (часы или минуты)
   //if (curMode == 1 || curMode == 2) { 	// в режиме настроек будильника или часов //this state is checked in main loop right before execution this function
     if (blinkTimer.isReady()) { 		// пришло время моргать

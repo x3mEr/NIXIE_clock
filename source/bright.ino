@@ -1,3 +1,7 @@
+/*  Copyright (C) 2019  Pavel Smelov
+	This program is licensed under GNU GPLv3
+	The full notice can be found in the nixieClock.ino */
+
 void backlBrightTick() {
   if (BACKL_MODE == 0 && backlBrightTimer.isReady()) {
     if (backlBrightDirection) {

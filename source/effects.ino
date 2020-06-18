@@ -1,3 +1,7 @@
+/*  Copyright (C) 2019  Pavel Smelov
+	This program is licensed under GNU GPLv3
+	The full notice can be found in the nixieClock.ino */
+
 void flipTick() {
   if (FLIP_EFFECT == 0) {
     sendTime(hrs, mins);

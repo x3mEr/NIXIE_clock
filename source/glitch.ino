@@ -1,3 +1,7 @@
+/*  Copyright (C) 2019  Pavel Smelov
+	This program is licensed under GNU GPLv3
+	The full notice can be found in the nixieClock.ino */
+
 void glitchTick() {
   if (!glitchFlag && secs > 7 && secs < 55) {
     if (glitchTimer.isReady()) {

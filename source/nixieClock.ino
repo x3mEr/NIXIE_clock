@@ -1,6 +1,21 @@
 /*
-  Based on https://github.com/AlexGyver/NixieClock_v2
-  Bugs fixed, alarm function and DHT22 support added.
+    Copyright (C) 2019  Pavel Smelov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+    Based on https://github.com/AlexGyver/NixieClock_v2
+    Bugs fixed, alarm function and DHT22 support added.
 */
 /*
     - Hold "SET" - switch between modes: "clock", "set alarm", "set clock".
@@ -9,7 +24,7 @@
     - Click "SET" while alarm rings - turn alarm off.
 Effects:
 	- Click "-" in "clock" mode - change backlight mode: breath, always on, off.
-	- Click "+" in "clock" mode - change effects of digits appearance: no effect, smooth fading, rewind in order of number, rewind in order of cathode.
+	- Click "+" in "clock" mode - change effect of digits appearance.
     - Hold "-" - turn the "glitches" on/off.
     - Hold "+" - turn the "show temp" on/off.
 */
@@ -42,7 +57,7 @@ Effects:
 // 5 - elastic band (recommended speed: 70-120)
 // 6 - glitchy flip (recommended speed: 40)
 #define CHECK_EFFECTS 0 //lines 8-10 in timeTicker.ino speed up the time))
-byte FLIP_EFFECT = 1; // effect of digits appearance
+byte FLIP_EFFECT = 6; // effect of digits appearance
 const byte FLIP_SPEED[] = {0, 130, 70, 70, 120, 80, 40}; //ms
 const byte FLIP_EFFECT_NUM = (sizeof(FLIP_SPEED)/sizeof(*FLIP_SPEED)); // the number of effects. Should be equal to the length of FLIP_SPEED array
 //const byte FLIP_EFFECT_NUM = 6; // the quantity of effect. Should be equal to the length of FLIP_SPEED array
